@@ -50,3 +50,4 @@ void limitPlayer(){
    if(playerY < 0)
      playerY = 0;
 }
+//hola aixo es una prova pel git kraken, ets un pringat
