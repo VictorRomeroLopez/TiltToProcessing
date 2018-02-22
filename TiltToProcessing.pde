@@ -47,12 +47,12 @@ void draw(){
   background(255);
   //Creem el personatge a una posició i el pintem de color verd
   fill(0,255,0);
-  ellipse(playerX,playerY,playerRadiusX,playerRadiusY);
+  ellipse(playerX, playerY, playerRadiusX, playerRadiusY);
   //Creem  els enemics a les seves posiciós i els pintem de color vermell
   fill(255,0,0);
-  ellipse(enemy1X, enemy1Y,playerRadiusX,playerRadiusY);
-  ellipse(enemy2X, enemy2Y,playerRadiusX,playerRadiusY);
-  ellipse(enemy3X, enemy3Y,playerRadiusX,playerRadiusY);
+  ellipse(enemy1X, enemy1Y, playerRadiusX, playerRadiusY);
+  ellipse(enemy2X, enemy2Y, playerRadiusX, playerRadiusY);
+  ellipse(enemy3X, enemy3Y, playerRadiusX, playerRadiusY);
 
   //Calculem el vector director normalitzat que ens moura el personatge
   vectorX = mouseX - playerX;
