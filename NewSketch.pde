@@ -27,7 +27,7 @@ void setup()
   playerX = width/2;
   playerY = height/2;
 }
-
+hghgh
 //Zona de draw
 void draw(){
   //background blanc
