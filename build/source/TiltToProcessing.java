@@ -20,8 +20,8 @@ public class TiltToProcessing extends PApplet {
 //Variables per la creacio del personatge i enemics
 int playerX;
 int playerY;
-final int playerRadiusX = 50;
-final int playerRadiusY = 50;
+final int playerRadiusX = 20;
+final int playerRadiusY = 20;
 int enemy1X;
 int enemy1Y;
 int enemy2X;
@@ -29,10 +29,10 @@ int enemy2Y;
 int enemy3X;
 int enemy3Y;
 //Variable estatica per controlar la velocitat del joc
-final int speed = 15;
-final int enemy1Speed = 10;
-final int enemy2Speed = 8;
-final int enemy3Speed = 5;
+final int speed = 5;
+final int enemy1Speed = 4;
+final int enemy2Speed = 3;
+final int enemy3Speed = 2;
 //variables per calcular el vector de moviment
 int vectorX;
 int vectorY;
@@ -63,12 +63,12 @@ public void draw(){
   background(255);
   //Creem el personatge a una posici\u00f3 i el pintem de color verd
   fill(0,255,0);
-  ellipse(playerX,playerY,playerRadiusX,playerRadiusY);
+  ellipse(playerX, playerY, playerRadiusX, playerRadiusY);
   //Creem  els enemics a les seves posici\u00f3s i els pintem de color vermell
   fill(255,0,0);
-  ellipse(enemy1X, enemy1Y,playerRadiusX,playerRadiusY);
-  ellipse(enemy2X, enemy2Y,playerRadiusX,playerRadiusY);
-  ellipse(enemy3X, enemy3Y,playerRadiusX,playerRadiusY);
+  ellipse(enemy1X, enemy1Y, playerRadiusX, playerRadiusY);
+  ellipse(enemy2X, enemy2Y, playerRadiusX, playerRadiusY);
+  ellipse(enemy3X, enemy3Y, playerRadiusX, playerRadiusY);
 
   //Calculem el vector director normalitzat que ens moura el personatge
   vectorX = mouseX - playerX;
@@ -104,8 +104,8 @@ public void mousePressed(){
   //Multiplicant la velocitat per deu fem que es crei un efecte similar al del dash
   vectorX = mouseX - playerX;
   vectorY = mouseY - playerY;
-  normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed*10);
-  normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed*10);
+  normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed*5);
+  normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed*5);
   playerX += normalizedVectorX;
   playerY += normalizedVectorY;
 
