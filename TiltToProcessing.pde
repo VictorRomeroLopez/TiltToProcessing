@@ -1,22 +1,20 @@
-//TestMoviment Personatge
-
 //Zona de variables
+final int POSITIONX = 0;
+final int POSITIONY = 1;
 //Variables per la creacio del personatge i enemics
-int playerX;
-int playerY;
+int playerPosition[]={0,0};
+// int playerY;
 final int playerRadiusX = 20;
 final int playerRadiusY = 20;
-int enemy1X;
-int enemy1Y;
-int enemy2X;
-int enemy2Y;
-int enemy3X;
-int enemy3Y;
+int mousePosition[] = {0,0};
+int enemy1Position[] = {0,0};
+int enemy2Position[] = {0,0};
+int enemy3Position[] = {0,0};
 //Variable estatica per controlar la velocitat del joc
 final int speed = 5;
-final int enemy1Speed = 4;
-final int enemy2Speed = 3;
-final int enemy3Speed = 2;
+final int enemy1Speed = ceil(speed*0.8);
+final int enemy2Speed = ceil(speed*0.6);
+final int enemy3Speed = ceil(speed*0.4);
 //variables per calcular el vector de moviment
 int vectorX;
 int vectorY;
@@ -25,72 +23,54 @@ int normalizedVectorY;
 //Zona de setup
 void setup()
 {
-    //Pantalla complerta
+  //Pantalla complerta
   fullScreen();
-    //Modificar ample del pinzell
+  //Modificar ample del pinzell
   strokeWeight(5);
-    //Posicio inicial del personatge principal
-  playerX = width/2;
-  playerY = height/2;
-  //posicio inicial dels enemics
-  enemy1X = 0;
-  enemy1Y = 0;
-  enemy2X = width;
-  enemy2Y = 0;
-  enemy3X = width;
-  enemy3Y = height;
+  //Posicio inicial del personatge principal
+  playerPosition[POSITIONX] = width/2;
+  playerPosition[POSITIONY] = height/2;
+  //Posicio inicial dels enemics
+  enemy1Position[POSITIONX] = 0;
+  enemy1Position[POSITIONY] = 1;
+  enemy2Position[POSITIONX] = width;
+  enemy2Position[POSITIONY] = 1;
+  enemy3Position[POSITIONX] = width;
+  enemy3Position[POSITIONY] = height;
 }
 
 //Zona de draw
 void draw(){
-  //background blanc
+  //Obtenim la possició del mouse
+  mousePosition[POSITIONX] = mouseX;
+  mousePosition[POSITIONY] = mouseY;
+  //Background blanc
   background(255);
   //Creem el personatge a una posició i el pintem de color verd
   fill(0,255,0);
-  ellipse(playerX, playerY, playerRadiusX, playerRadiusY);
+  ellipse(playerPosition[POSITIONX], playerPosition[POSITIONY], playerRadiusX, playerRadiusY);
   //Creem  els enemics a les seves posiciós i els pintem de color vermell
   fill(255,0,0);
-  ellipse(enemy1X, enemy1Y, playerRadiusX, playerRadiusY);
-  ellipse(enemy2X, enemy2Y, playerRadiusX, playerRadiusY);
-  ellipse(enemy3X, enemy3Y, playerRadiusX, playerRadiusY);
-
-  //Calculem el vector director normalitzat que ens moura el personatge
-  vectorX = mouseX - playerX;
-  vectorY = mouseY - playerY;
-  normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
-  normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
-  playerX += normalizedVectorX;
-  playerY += normalizedVectorY;
-//moviement enemic 1
-  vectorX = playerX - enemy1X;
-  vectorY = playerY - enemy1Y;
-  normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*enemy1Speed);
-  normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*enemy1Speed);
-  enemy1X += normalizedVectorX;
-  enemy1Y += normalizedVectorY;
-//moviment enemic2
-  vectorX = playerX - enemy2X;
-  vectorY = playerY - enemy2Y;
-  normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*enemy2Speed);
-  normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*enemy2Speed);
-  enemy2X += normalizedVectorX;
-  enemy2Y += normalizedVectorY;
-//moviment enemic 3
-  vectorX = playerX - enemy3X;
-  vectorY = playerY - enemy3Y;
-  normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*enemy3Speed);
-  normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*enemy3Speed);
-  enemy3X += normalizedVectorX;
-  enemy3Y += normalizedVectorY;
+  ellipse(enemy1Position[POSITIONX], enemy1Position[POSITIONY], playerRadiusX, playerRadiusY);
+  ellipse(enemy2Position[POSITIONX], enemy2Position[POSITIONY], playerRadiusX, playerRadiusY);
+  ellipse(enemy3Position[POSITIONX], enemy3Position[POSITIONY], playerRadiusX, playerRadiusY);
+  //Moviment dels elements de joc
+  movement(playerPosition, mousePosition, speed);
+  movement(enemy1Position, playerPosition, enemy1Speed);
+  movement(enemy2Position, playerPosition, enemy2Speed);
+  movement(enemy3Position, playerPosition, enemy3Speed);
 }
 
 void mousePressed(){
-  //Multiplicant la velocitat per deu fem que es crei un efecte similar al del dash
-  vectorX = mouseX - playerX;
-  vectorY = mouseY - playerY;
-  normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed*5);
-  normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed*5);
-  playerX += normalizedVectorX;
-  playerY += normalizedVectorY;
+  //Multiplicant la velocitat per un nombre fem que es crei un efecte similar al del dash
+  movement(playerPosition, mousePosition, speed*5);
+}
 
+void movement(int startPoint[], int endPoint[], int speed){
+    vectorX = endPoint[POSITIONX] - startPoint[POSITIONX];
+    vectorY = endPoint[POSITIONY] - startPoint[POSITIONY];
+    normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
+    normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
+    startPoint[POSITIONX] += normalizedVectorX;
+    startPoint[POSITIONY] += normalizedVectorY;
 }
