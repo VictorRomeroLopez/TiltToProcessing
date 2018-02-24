@@ -15,6 +15,8 @@ import java.io.IOException;
 public class TiltToProcessing extends PApplet {
 
 //Zona de variables
+final int POSITIONX = 0;
+final int POSITIONY = 1;
 final int SPEED = 10;
 int enemyGenerationSpeed = 15;
 int i = 0;
@@ -31,8 +33,8 @@ public void setup()
   
   player = new Player();
   for(int i = 0; i < obstacles.length; i++){
-      obstacles[i] = new Obstacle();
-    }
+    obstacles[i] = new Obstacle();
+  }
   generateObstacles();
 }
 
@@ -52,6 +54,8 @@ public void draw(){
   if (!player.mouseColision(mousePointer)){
     player.moveTowards(mousePointer, SPEED);
   }
+
+  // if(player.colision(obstacle[i].position))
   //generador d'ememics a l'array
   if(j<enemies.length){
     if(frameCount % enemyGenerationSpeed == 0){
@@ -86,7 +90,7 @@ public void generateObstacles(){
     counter = i;
     obstacles[i].randomizePosition();
     while(counter != 0){
-      if(obstacles[i].obstaclePositionX == obstacles[counter-1].obstaclePositionX && obstacles[i].obstaclePositionY == obstacles[counter-1].obstaclePositionY){
+      if(obstacles[i].getPosition(POSITIONX) == obstacles[counter-1].getPosition(POSITIONX) && obstacles[i].getPosition(POSITIONY) == obstacles[counter-1].getPosition(POSITIONY)){
       obstacles[i].randomizePosition();
         counter = i;
       }
@@ -141,25 +145,33 @@ class MovingObject{
   }
 }
 class Obstacle{
+  final int POSITIONX = 0;
+  final int POSITIONY = 1;
   final int BS = 100;
   final int MIN = 1;
   final int MAXX = ceil(width/BS)-1;
   final int MAXY = ceil(height/BS)-1;
-  int obstaclePositionX;
-  int obstaclePositionY;
+  int position[] = {0,0};
 
   Obstacle(){
-    obstaclePositionX = ceil(random(MIN,MAXX));
-    obstaclePositionY = ceil(random(MIN,MAXY));
+    position[POSITIONX] = ceil(random(MIN,MAXX));
+    position[POSITIONY] = ceil(random(MIN,MAXY));
+  }
+
+  public int getPosition(int i){
+    if(i == 0 || i == 1)
+      i = position[i];
+    return i;
   }
 
   public void randomizePosition(){
-    obstaclePositionX = ceil(random(MIN,MAXX));
-    obstaclePositionY = ceil(random(MIN,MAXY));
+    position[POSITIONX] = ceil(random(MIN,MAXX));
+    position[POSITIONY] = ceil(random(MIN,MAXY));
   }
 
   public void printObstacle(){
-      ellipse(obstaclePositionX * BS, obstaclePositionY * BS, BS, BS );
+    strokeWeight(0);
+    ellipse(position[POSITIONX] * BS, position[POSITIONY] * BS, BS, BS );
   }
 }
 class Player extends MovingObject{

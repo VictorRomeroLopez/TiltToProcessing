@@ -1,4 +1,6 @@
 //Zona de variables
+final int POSITIONX = 0;
+final int POSITIONY = 1;
 final int SPEED = 10;
 int enemyGenerationSpeed = 15;
 int i = 0;
@@ -15,8 +17,8 @@ void setup()
   fullScreen();
   player = new Player();
   for(int i = 0; i < obstacles.length; i++){
-      obstacles[i] = new Obstacle();
-    }
+    obstacles[i] = new Obstacle();
+  }
   generateObstacles();
 }
 
@@ -36,6 +38,8 @@ void draw(){
   if (!player.mouseColision(mousePointer)){
     player.moveTowards(mousePointer, SPEED);
   }
+
+  // if(player.colision(obstacle[i].position))
   //generador d'ememics a l'array
   if(j<enemies.length){
     if(frameCount % enemyGenerationSpeed == 0){
@@ -70,7 +74,7 @@ void generateObstacles(){
     counter = i;
     obstacles[i].randomizePosition();
     while(counter != 0){
-      if(obstacles[i].obstaclePositionX == obstacles[counter-1].obstaclePositionX && obstacles[i].obstaclePositionY == obstacles[counter-1].obstaclePositionY){
+      if(obstacles[i].getPosition(POSITIONX) == obstacles[counter-1].getPosition(POSITIONX) && obstacles[i].getPosition(POSITIONY) == obstacles[counter-1].getPosition(POSITIONY)){
       obstacles[i].randomizePosition();
         counter = i;
       }
