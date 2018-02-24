@@ -15,9 +15,8 @@ import java.io.IOException;
 public class TiltToProcessing extends PApplet {
 
 //Zona de variables
-final int POSITIONX = 0;
-final int POSITIONY = 1;
 final int ELLIPSERADIUS = 100;
+<<<<<<< Updated upstream
 //Variables per la creacio del personatge , enemics i obstacles
 int playerPosition[]={0,0};
 final int min = 1;
@@ -25,26 +24,28 @@ int maxX;
 int maxY;
 final int playerRadiusX = 20;
 final int playerRadiusY = 20;
+=======
+final int NUMOBSTACLES = 3;
+//Variables per la creacio del personatge i enemics
+// int playerY;
+final int min = 1;
+final int maxX = ceil(height/100) - 3;
+final int maxY = ceil(width/100) - 1;
+>>>>>>> Stashed changes
 final int obstacleRadiusX = 100;
 final int obstacleTRadiusY = 100;
-int mousePosition[] = {0,0};
-int enemy1Position[] = {0,0};
-int enemy2Position[] = {0,0};
-int enemy3Position[] = {0,0};
 int obstacleX_values [] = {0,0,0};
 int obstacleY_values [] = {0,0,0};
 boolean sameX = true;
 boolean sameY = true;
 //Variable estatica per controlar la velocitat del joc
-final int speed = 15;
-final int enemy1Speed = ceil(speed*0.8f);
-final int enemy2Speed = ceil(speed*0.6f);
-final int enemy3Speed = ceil(speed*0.5f);
-//variables per calcular el vector de moviment
-int vectorX;
-int vectorY;
-int normalizedVectorX;
-int normalizedVectorY;
+final int speed = 10;
+int i = 0;
+int j = 0;
+int mousePointer[] = {0,0};
+Player player;
+Enemy enemies[] = new Enemy[50];
+int enemyGenerationSpeed = 15;
 
 //Zona de setup
 public void setup()
@@ -55,55 +56,121 @@ public void setup()
   maxX = ceil(width/100) - 3;
   maxY = ceil(height/100) - 1;
   //Modificar ample del pinzell
-  strokeWeight(5);
-  //Posicio inicial del personatge principal
-  playerPosition[POSITIONX] = width/2;
-  playerPosition[POSITIONY] = height/2;
-  //Posicio inicial dels enemics
-  enemy1Position[POSITIONX] = 0;
-  enemy1Position[POSITIONY] = 1;
-  enemy2Position[POSITIONX] = width;
-  enemy2Position[POSITIONY] = 1;
-  enemy3Position[POSITIONX] = width;
-  enemy3Position[POSITIONY] = height;
+  player = new Player();
 
-  generateObstacle(obstacleX_values, obstacleY_values);
-  printObstacle(obstacleX_values, obstacleY_values);
+  // generateObstacle(obstacleX_values, obstacleY_values);
+  // printObstacle(obstacleX_values, obstacleY_values);
 }
 
 //Zona de draw
 public void draw(){
-  //Obtenim la possici\u00f3 del mouse
-  mousePosition[POSITIONX] = mouseX;
-  mousePosition[POSITIONY] = mouseY;
   //Background blanc
   background(255);
-  //Creem el personatge a una posici\u00f3 i el pintem de color verd
-  fill(0,255,0);
-  ellipse(playerPosition[POSITIONX], playerPosition[POSITIONY], playerRadiusX, playerRadiusY);
-  //Creem  els enemics a les seves posici\u00f3s i els pintem de color vermell
-  printObstacle(obstacleX_values, obstacleY_values);
-  fill(255,0,0);
-  ellipse(enemy1Position[POSITIONX], enemy1Position[POSITIONY], playerRadiusX, playerRadiusY);
-  ellipse(enemy2Position[POSITIONX], enemy2Position[POSITIONY], playerRadiusX, playerRadiusY);
-  ellipse(enemy3Position[POSITIONX], enemy3Position[POSITIONY], playerRadiusX, playerRadiusY);
-  //Moviment dels elements de joc
-  movement(playerPosition, mousePosition, speed);
-  movement(enemy1Position, playerPosition, enemy1Speed);
-  movement(enemy2Position, playerPosition, enemy2Speed);
-  movement(enemy3Position, playerPosition, enemy3Speed);
+  //Obtenim la possici\u00f3 del mouse
+  mousePointer[0] = mouseX;
+  mousePointer[1] = mouseY;
+  // printObstacle(obstacleX_values, obstacleY_values);
+  player.pop();
+  if (!player.mouseColision(mousePointer)){
+    player.moveTowards(mousePointer, speed);
+  }
+  if(j<enemies.length){
+    if(frameCount % enemyGenerationSpeed == 0){
+      enemies[i] = new Enemy();
+      enemies[i].pop();
+      i++;
+      j++;
+    }
+  }
+
+  for( int k = 0; k<j; k++){
+    enemies[k].pop();
+    enemies[k].moveTowards(player.position, ceil(random(1,speed-1)));
+    if(enemies[k].colision(player.position, player.radius)){
+      // player.position[0] = width/2;
+      // player.position[1] = height/2;
+      exit();
+    }
+  }
+
 }
 
 public void mousePressed(){
-  //Multiplicant la velocitat per un nombre fem que es crei un efecte similar al del dash
-  movement(playerPosition, mousePosition, speed*5);
+  if(!player.mouseColision(mousePointer))
+    player.moveTowards(mousePointer, speed*10);
 }
 
-public void movement(int startPoint[], int endPoint[], int speed){
-    vectorX = endPoint[POSITIONX] - startPoint[POSITIONX];
-    vectorY = endPoint[POSITIONY] - startPoint[POSITIONY];
+// void generateObstacle(int obstalceX_values[], int obstacleY_values[]){
+//     obstalceX_values[0] = ceil(random(1,10));
+//     obstacleY_values[0] = ceil(random(1,9));
+//
+//     while(sameX && sameY)
+//     {
+//         obstalceX_values[1] = ceil(random(1,10));
+//         if(obstalceX_values[0] != obstalceX_values[1])
+//         {
+//           sameX = false;
+//         }
+//         obstacleY_values[1] = ceil(random(1,9));
+//         if(obstacleY_values[0] != obstacleY_values[1])
+//         {
+//           sameY = false;
+//         }
+//     }
+//     sameX = true;
+//     sameY = true;
+//     while(sameX && sameY){
+//         obstalceX_values[2] = ceil(random(1, 10));
+//         if(obstalceX_values[2] != obstalceX_values[1]){
+//           sameX = false;
+//         }
+//         obstacleY_values[2] = ceil(random(1, 9));
+//         if(obstacleY_values[2] != obstacleY_values[1]){
+//           sameY = false;
+//         }
+//     }
+// }
+//
+// void printObstacle(int obstacleX_values[], int obstalceY_values[]){
+//
+//   fill(23,240,230);
+//   ellipse(maxX * ELLIPSERADIUS, maxY * ELLIPSERADIUS, obstacleRadiusX, obstacleRadiusX );
+//
+//   for(int i=0; i< obstacleX_values.length; i++){
+//     ellipse(obstacleX_values[i] * ELLIPSERADIUS, obstalceY_values[i] * ELLIPSERADIUS, obstacleRadiusX, obstacleRadiusX );
+//   }
+//
+// }
+class Enemy extends MovingObject{
+  Enemy(){
+    position[POSITIONX] = ceil(random(0,width));
+    position[POSITIONY] = ceil(random(0,height));
+  }
+
+  public void pop(){
+    fill(255,0,0);
+    strokeWeight(0);
+    ellipse(position[POSITIONX], position[POSITIONY], radius, radius);
+  }
+}
+class MovingObject{
+  final int POSITIONX = 0;
+  final int POSITIONY = 1;
+  int position[] = { 0, 0 };
+  int radius = 20;
+  private int vectorX;
+  private int vectorY;
+  private int normalizedVectorX;
+  private int normalizedVectorY;
+  public int magnitudeVectorX;
+  public int magnitudeVectorY;
+
+  public void moveTowards(int endPos[], int speed){
+    vectorX = endPos[POSITIONX] - position[POSITIONX];
+    vectorY = endPos[POSITIONY] - position[POSITIONY];
     normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
     normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
+<<<<<<< Updated upstream
     startPoint[POSITIONX] += normalizedVectorX;
     startPoint[POSITIONY] += normalizedVectorY;
 }
@@ -135,8 +202,35 @@ public void printObstacle(int obstacleX_values[], int obstalceY_values[]){
 
   for(int i=0; i< obstacleX_values.length; i++){
   ellipse(obstacleX_values[i]* ELLIPSERADIUS, obstalceY_values[i] * ELLIPSERADIUS, obstacleRadiusX, obstacleRadiusX );
-}
+=======
+    position[POSITIONX] += normalizedVectorX;
+    position[POSITIONY] += normalizedVectorY;
+  }
 
+  public boolean colision(int endPos[], int endRadius){
+      magnitudeVectorX = ceil(sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONX] - position[POSITIONX],2)));
+      magnitudeVectorY = ceil(sqrt(pow(endPos[POSITIONY] - position[POSITIONY],2) + pow(endPos[POSITIONY] - position[POSITIONY],2)));
+      return magnitudeVectorX < (endRadius*0.75f+radius*0.75f) && magnitudeVectorY < (endRadius*0.75f+radius*0.75f);
+  }
+>>>>>>> Stashed changes
+}
+class Player extends MovingObject{
+  Player(){
+    position[POSITIONX] = width/2;
+    position[POSITIONY] = height/2;
+  }
+
+  public void pop(){
+    fill(0,255,0);
+    strokeWeight(0);
+    ellipse(position[POSITIONX], position[POSITIONY], radius, radius);
+  }
+
+  public boolean mouseColision(int endPos[]){
+      magnitudeVectorX = ceil(sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONX] - position[POSITIONX],2)));
+      magnitudeVectorY = ceil(sqrt(pow(endPos[POSITIONY] - position[POSITIONY],2) + pow(endPos[POSITIONY] - position[POSITIONY],2)));
+      return magnitudeVectorX < radius/2 && magnitudeVectorY < radius/2;
+  }
 }
   public void settings() {  fullScreen(); }
   static public void main(String[] passedArgs) {

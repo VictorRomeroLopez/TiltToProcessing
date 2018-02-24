@@ -1,34 +1,28 @@
 //Zona de variables
-final int POSITIONX = 0;
-final int POSITIONY = 1;
 final int ELLIPSERADIUS = 100;
-//Variables per la creacio del personatge , enemics i obstacles
+final int NUMOBSTACLES = 3;
+//Variables per la creacio del personatge i enemics
 int playerPosition[]={0,0};
+// int playerY;
 final int min = 1;
-int maxX;
-int maxY;
+final int maxX = ceil(height/100) - 3;
+final int maxY = ceil(width/100) - 1;
 final int playerRadiusX = 20;
 final int playerRadiusY = 20;
 final int obstacleRadiusX = 100;
 final int obstacleTRadiusY = 100;
-int mousePosition[] = {0,0};
-int enemy1Position[] = {0,0};
-int enemy2Position[] = {0,0};
-int enemy3Position[] = {0,0};
 int obstacleX_values [] = {0,0,0};
 int obstacleY_values [] = {0,0,0};
 boolean sameX = true;
 boolean sameY = true;
 //Variable estatica per controlar la velocitat del joc
-final int speed = 15;
-final int enemy1Speed = ceil(speed*0.8);
-final int enemy2Speed = ceil(speed*0.6);
-final int enemy3Speed = ceil(speed*0.5);
-//variables per calcular el vector de moviment
-int vectorX;
-int vectorY;
-int normalizedVectorX;
-int normalizedVectorY;
+final int speed = 10;
+int i = 0;
+int j = 0;
+int mousePointer[] = {0,0};
+Player player;
+Enemy enemies[] = new Enemy[50];
+int enemyGenerationSpeed = 15;
 
 //Zona de setup
 void setup()
@@ -39,27 +33,14 @@ void setup()
   maxX = ceil(width/100) - 3;
   maxY = ceil(height/100) - 1;
   //Modificar ample del pinzell
-  strokeWeight(5);
-  //Posicio inicial del personatge principal
-  playerPosition[POSITIONX] = width/2;
-  playerPosition[POSITIONY] = height/2;
-  //Posicio inicial dels enemics
-  enemy1Position[POSITIONX] = 0;
-  enemy1Position[POSITIONY] = 1;
-  enemy2Position[POSITIONX] = width;
-  enemy2Position[POSITIONY] = 1;
-  enemy3Position[POSITIONX] = width;
-  enemy3Position[POSITIONY] = height;
+  player = new Player();
 
-  generateObstacle(obstacleX_values, obstacleY_values);
-  printObstacle(obstacleX_values, obstacleY_values);
+  // generateObstacle(obstacleX_values, obstacleY_values);
+  // printObstacle(obstacleX_values, obstacleY_values);
 }
 
 //Zona de draw
 void draw(){
-  //Obtenim la possició del mouse
-  mousePosition[POSITIONX] = mouseX;
-  mousePosition[POSITIONY] = mouseY;
   //Background blanc
   background(255);
   //Creem el personatge a una posició i el pintem de color verd
@@ -112,6 +93,8 @@ void generateObstacle(int obstalceX_values[], int obstacleY_values[]){
         obstacleY_values[2] = ceil(random(min, maxY));
         sameY = (obstacleY_values[2] == obstacleY_values[1]);
     }
+  }
+
 }
 
 void printObstacle(int obstacleX_values[], int obstalceY_values[]){
@@ -121,4 +104,49 @@ void printObstacle(int obstacleX_values[], int obstalceY_values[]){
   ellipse(obstacleX_values[i]* ELLIPSERADIUS, obstalceY_values[i] * ELLIPSERADIUS, obstacleRadiusX, obstacleRadiusX );
 }
 
+void mousePressed(){
+  if(!player.mouseColision(mousePointer))
+    player.moveTowards(mousePointer, speed*10);
 }
+
+// void generateObstacle(int obstalceX_values[], int obstacleY_values[]){
+//     obstalceX_values[0] = ceil(random(1,10));
+//     obstacleY_values[0] = ceil(random(1,9));
+//
+//     while(sameX && sameY)
+//     {
+//         obstalceX_values[1] = ceil(random(1,10));
+//         if(obstalceX_values[0] != obstalceX_values[1])
+//         {
+//           sameX = false;
+//         }
+//         obstacleY_values[1] = ceil(random(1,9));
+//         if(obstacleY_values[0] != obstacleY_values[1])
+//         {
+//           sameY = false;
+//         }
+//     }
+//     sameX = true;
+//     sameY = true;
+//     while(sameX && sameY){
+//         obstalceX_values[2] = ceil(random(1, 10));
+//         if(obstalceX_values[2] != obstalceX_values[1]){
+//           sameX = false;
+//         }
+//         obstacleY_values[2] = ceil(random(1, 9));
+//         if(obstacleY_values[2] != obstacleY_values[1]){
+//           sameY = false;
+//         }
+//     }
+// }
+//
+// void printObstacle(int obstacleX_values[], int obstalceY_values[]){
+//
+//   fill(23,240,230);
+//   ellipse(maxX * ELLIPSERADIUS, maxY * ELLIPSERADIUS, obstacleRadiusX, obstacleRadiusX );
+//
+//   for(int i=0; i< obstacleX_values.length; i++){
+//     ellipse(obstacleX_values[i] * ELLIPSERADIUS, obstalceY_values[i] * ELLIPSERADIUS, obstacleRadiusX, obstacleRadiusX );
+//   }
+//
+// }
