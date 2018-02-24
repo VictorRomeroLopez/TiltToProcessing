@@ -18,13 +18,11 @@ public class TiltToProcessing extends PApplet {
 final int POSITIONX = 0;
 final int POSITIONY = 1;
 final int ELLIPSERADIUS = 100;
-final int NUMOBSTACLES = 3;
-//Variables per la creacio del personatge i enemics
+//Variables per la creacio del personatge , enemics i obstacles
 int playerPosition[]={0,0};
-// int playerY;
 final int min = 1;
-final int maxX = ceil(height/100) - 3;
-final int maxY = ceil(width/100) - 1;
+int maxX;
+int maxY;
 final int playerRadiusX = 20;
 final int playerRadiusY = 20;
 final int obstacleRadiusX = 100;
@@ -53,6 +51,9 @@ public void setup()
 {
   //Pantalla complerta
   
+  //fem set de la X maxima i de la Y maxima a la que es podra generar un valor
+  maxX = ceil(width/100) - 3;
+  maxY = ceil(height/100) - 1;
   //Modificar ample del pinzell
   strokeWeight(5);
   //Posicio inicial del personatge principal
@@ -108,44 +109,30 @@ public void movement(int startPoint[], int endPoint[], int speed){
 }
 
 public void generateObstacle(int obstalceX_values[], int obstacleY_values[]){
-    obstalceX_values[0] = ceil(random(1,16));
-    obstacleY_values[0] = ceil(random(1,9));
-
-    while(sameX && sameY)
+  //fem un random entre el maxim i el minim, arrodonint a la baixa i guardantho a un array
+    obstalceX_values[0] = ceil(random(min,maxX));
+    obstacleY_values[0] = ceil(random(min,maxY));
+  //fem un random entre el maxim i el minim, arrodonint a la baixa i guardantho a un array
+    while(sameX || sameY)
     {
-        obstalceX_values[1] = ceil(random(1,16));
-
-        if(obstalceX_values[0] != obstalceX_values[1])
-        {
-          sameX = false;
-        }
-
-        obstacleY_values[1] = ceil(random(1,9));
-
-        if(obstacleY_values[0] != obstacleY_values[1])
-        {
-          sameY = false;
-        }
-
+        obstalceX_values[1] = ceil(random(1,maxX));
+        sameX = obstalceX_values[0] == obstalceX_values[1];
+        obstacleY_values[1] = ceil(random(min,maxY));
+        sameY = obstacleY_values[0] == obstacleY_values[1];
     }
-
     sameX = true;
     sameY = true;
-
-    while(sameX && sameY){
-        obstalceX_values[2] = ceil(random(1, 16));
-        if(obstalceX_values[2] != obstalceX_values[1]){
-          sameX = false;
-        }
-        obstacleY_values[2] = ceil(random(1, 9));
-        if(obstacleY_values[2] != obstacleY_values[1]){
-          sameY = false;
-        }
+    while(sameX || sameY){
+        obstalceX_values[2] = ceil(random(min, maxX));
+        sameX = (obstalceX_values[2] == obstalceX_values[1]);
+        obstacleY_values[2] = ceil(random(min, maxY));
+        sameY = (obstacleY_values[2] == obstacleY_values[1]);
     }
 }
+
 public void printObstacle(int obstacleX_values[], int obstalceY_values[]){
   fill(23,240,230);
-  ellipse(maxX* ELLIPSERADIUS, maxY * ELLIPSERADIUS, obstacleRadiusX, obstacleRadiusX );
+
   for(int i=0; i< obstacleX_values.length; i++){
   ellipse(obstacleX_values[i]* ELLIPSERADIUS, obstalceY_values[i] * ELLIPSERADIUS, obstacleRadiusX, obstacleRadiusX );
 }
