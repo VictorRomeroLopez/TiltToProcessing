@@ -1,16 +1,11 @@
 //Zona de variables
-int MAXX;
-int MAXY;
-final int MIN = 1;
-final int BS = 100;
 final int SPEED = 10;
 int enemyGenerationSpeed = 15;
-int obstacleX_value [] = {0,0,0};
-int obstacleY_value [] = {0,0,0};
 int i = 0;
 int j = 0;
 int mousePointer[] = {0,0};
 Enemy enemies[] = new Enemy[25];
+Obstacle obstacles[] = new Obstacle[3];
 Player player;
 
 //Zona de setup
@@ -18,11 +13,11 @@ void setup()
 {
   //Pantalla complerta
   fullScreen();
-  //fem set de la X maxima i de la Y maxima a la que es podra generar un valor
-  MAXX = ceil(width/BS)-1;
-  MAXY = ceil(height/BS)-1;
   player = new Player();
-  generateObstacle();
+  for(int i = 0; i < obstacles.length; i++){
+      obstacles[i] = new Obstacle();
+    }
+  generateObstacles();
 }
 
 //Zona de draw
@@ -33,7 +28,8 @@ void draw(){
   mousePointer[0] = mouseX;
   mousePointer[1] = mouseY;
   //imprim tots els obstacles
-  printObstacle();
+  fill(24,240,230);
+  printObstacles();
   //fem apareixer el jugador
   player.pop();
   //moviment del jugador
@@ -65,20 +61,17 @@ void mousePressed(){
     player.moveTowards(mousePointer, SPEED*10);
 }
 
-void generateObstacle(){
+void generateObstacles(){
   int i = 0;
   int counter = 0;
-  obstacleX_value[i] = ceil(random(MIN,MAXX));
-  obstacleY_value[i] = ceil(random(MIN,MAXY));
+  obstacles[i].randomizePosition();
   i++;
-  while( i < obstacleX_value.length){
+  while( i < obstacles.length){
     counter = i;
-    obstacleX_value[i] = ceil(random(MIN,MAXX));
-    obstacleY_value[i] = ceil(random(MIN,MAXY));
+    obstacles[i].randomizePosition();
     while(counter != 0){
-      if(obstacleX_value[i] == obstacleX_value[counter-1] && obstacleY_value[i] == obstacleY_value[counter-1]){
-        obstacleX_value[i] = ceil(random(MIN,MAXX));
-        obstacleY_value[i] = ceil(random(MIN,MAXY));
+      if(obstacles[i].obstaclePositionX == obstacles[counter-1].obstaclePositionX && obstacles[i].obstaclePositionY == obstacles[counter-1].obstaclePositionY){
+      obstacles[i].randomizePosition();
         counter = i;
       }
       counter--;
@@ -87,9 +80,8 @@ void generateObstacle(){
   }
 }
 
-void printObstacle(){
-  fill(23,240,230);
-  for(int i=0; i< obstacleX_value.length; i++){
-    ellipse(obstacleX_value[i] * BS, obstacleY_value[i] * BS, BS, BS );
+void printObstacles(){
+  for(int i = 0; i< obstacles.length; i++){
+    obstacles[i].printObstacle();
   }
 }
