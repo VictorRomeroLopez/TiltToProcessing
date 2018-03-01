@@ -17,13 +17,16 @@ public class TiltToProcessing extends PApplet {
 //Zona de variables
 final int POSITIONX = 0;
 final int POSITIONY = 1;
+final int NUM_ENEMIES = 3;
+final int NUM_OBSTACLES = 3;
 final int SPEED = 10;
 int enemyGenerationSpeed = 15;
+boolean colisionObstacle;
 int i = 0;
 int j = 0;
-int mousePointer[] = {0,0};
-Enemy enemies[] = new Enemy[25];
-Obstacle obstacles[] = new Obstacle[3];
+float mousePointer[] = {0,0};
+Enemy enemies[] = new Enemy[NUM_ENEMIES];
+Obstacle obstacles[] = new Obstacle[NUM_OBSTACLES];
 Player player;
 
 //Zona de setup
@@ -45,17 +48,35 @@ public void draw(){
   //Obtenim la possici\u00f3 del mouse
   mousePointer[0] = mouseX;
   mousePointer[1] = mouseY;
-  //imprim tots els obstacles
+  //Set de la variable a false
+  colisionObstacle = false;
+  //Imprim tots els obstacles
   fill(24,240,230);
   printObstacles();
   //fem apareixer el jugador
   player.pop();
   //moviment del jugador
-  if (!player.mouseColision(mousePointer)){
+
+
+
+
+  for(int i = 0; i < obstacles.length && !colisionObstacle ; i++){
+    if(player.colision(obstacles[i].position, obstacles[i].getRadius())){
+      colisionObstacle = true;
+      player.colisionMovement(obstacles[i].position, obstacles[i].getRadius(), SPEED);
+    }
+  }
+  if (!colisionObstacle && !player.mouseColision(mousePointer)){
     player.moveTowards(mousePointer, SPEED);
+  }else if(!colisionObstacle){
+    player.position[POSITIONX] = mouseX;
+    player.position[POSITIONY] = mouseY;
   }
 
-  // if(player.colision(obstacle[i].position))
+
+
+
+
   //generador d'ememics a l'array
   if(j<enemies.length){
     if(frameCount % enemyGenerationSpeed == 0){
@@ -68,7 +89,15 @@ public void draw(){
   //aparici\u00f3 dels enemics a l'escenari i el persegueixen
   for( int k = 0; k<j; k++){
     enemies[k].pop();
-    enemies[k].moveTowards(player.position, ceil(random(1,SPEED-1)));
+    colisionObstacle = false;
+    for(int i = 0; i < obstacles.length && !colisionObstacle ; i++){
+      if(enemies[k].colision(obstacles[i].position, obstacles[i].getRadius())){
+        colisionObstacle = true;
+        enemies[k].colisionMovement(obstacles[i].position, obstacles[i].getRadius(), SPEED);
+      }
+    }
+    if(!colisionObstacle)
+      enemies[k].moveTowards(player.position, ceil(random(1,SPEED-1)));
     //passa alguna cosa si els enemics toquen al player
     if(enemies[k].colision(player.position, player.radius)){
       exit();
@@ -77,6 +106,9 @@ public void draw(){
 }
 
 public void mousePressed(){
+  println(' ');
+  println(player.position);
+  println(' ');
   if(!player.mouseColision(mousePointer))
     player.moveTowards(mousePointer, SPEED*10);
 }
@@ -120,58 +152,63 @@ class Enemy extends MovingObject{
 class MovingObject{
   final int POSITIONX = 0;
   final int POSITIONY = 1;
-  int position[] = { 0, 0 };
+  float position[] = { 0, 0 };
   int radius = 20;
-  private int vectorX;
-  private int vectorY;
-  private int normalizedVectorX;
-  private int normalizedVectorY;
-  public int magnitudeVectorX;
-  public int magnitudeVectorY;
+  public float magnitudeVector;
 
-  public void moveTowards(int endPos[], int speed){
+  public void moveTowards(float endPos[], int speed){
+    float vectorX;
+    float vectorY;
     vectorX = endPos[POSITIONX] - position[POSITIONX];
     vectorY = endPos[POSITIONY] - position[POSITIONY];
-    normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
-    normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
-    position[POSITIONX] += normalizedVectorX;
-    position[POSITIONY] += normalizedVectorY;
+    position[POSITIONX] += (vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
+    position[POSITIONY] += (vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
   }
 
-  public boolean colision(int endPos[], int endRadius){
-      magnitudeVectorX = ceil(sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONX] - position[POSITIONX],2)));
-      magnitudeVectorY = ceil(sqrt(pow(endPos[POSITIONY] - position[POSITIONY],2) + pow(endPos[POSITIONY] - position[POSITIONY],2)));
-      return magnitudeVectorX < (endRadius*0.75f+radius*0.75f) && magnitudeVectorY < (endRadius*0.75f+radius*0.75f);
+  public boolean colision(float endPos[], int endRadius){
+      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+      return magnitudeVector < (endRadius * 0.5f + radius * 0.5f);
+  }
+
+  public void colisionMovement(float colisionPos[], int radiusObstacle, int speed){
+    PVector v = new PVector(position[POSITIONX] - colisionPos[POSITIONX], position[POSITIONY] - colisionPos[POSITIONY]);
+    v.setMag(radiusObstacle/2 + radius/2 + 1);
+    position[POSITIONX] = v.x + colisionPos[POSITIONX];
+    position[POSITIONY] = v.y + colisionPos[POSITIONY];
   }
 }
 class Obstacle{
   final int POSITIONX = 0;
   final int POSITIONY = 1;
-  final int BS = 100;
+  final int RADIUS = 100;
   final int MIN = 1;
-  final int MAXX = ceil(width/BS)-1;
-  final int MAXY = ceil(height/BS)-1;
-  int position[] = {0,0};
+  final int MAXX = ceil(width/RADIUS)-1;
+  final int MAXY = ceil(height/RADIUS)-1;
+  float position[] = {0.0f,0.0f};
 
   Obstacle(){
-    position[POSITIONX] = ceil(random(MIN,MAXX));
-    position[POSITIONY] = ceil(random(MIN,MAXY));
+    position[POSITIONX] = random(MIN,MAXX)*RADIUS;
+    position[POSITIONY] = random(MIN,MAXY)*RADIUS;
   }
 
-  public int getPosition(int i){
+  public float getPosition(int i){
+    float j = 0.0f;
     if(i == 0 || i == 1)
-      i = position[i];
-    return i;
+       j = position[i];
+    return j;
   }
+  public int getRadius(){
+      return RADIUS;
+    }
 
   public void randomizePosition(){
-    position[POSITIONX] = ceil(random(MIN,MAXX));
-    position[POSITIONY] = ceil(random(MIN,MAXY));
+    position[POSITIONX] = ceil(random(MIN,MAXX))*RADIUS;
+    position[POSITIONY] = ceil(random(MIN,MAXY))*RADIUS;
   }
 
   public void printObstacle(){
     strokeWeight(0);
-    ellipse(position[POSITIONX] * BS, position[POSITIONY] * BS, BS, BS );
+    ellipse(position[POSITIONX], position[POSITIONY], RADIUS, RADIUS );
   }
 }
 class Player extends MovingObject{
@@ -186,10 +223,9 @@ class Player extends MovingObject{
     ellipse(position[POSITIONX], position[POSITIONY], radius, radius);
   }
 
-  public boolean mouseColision(int endPos[]){
-      magnitudeVectorX = ceil(sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONX] - position[POSITIONX],2)));
-      magnitudeVectorY = ceil(sqrt(pow(endPos[POSITIONY] - position[POSITIONY],2) + pow(endPos[POSITIONY] - position[POSITIONY],2)));
-      return magnitudeVectorX < radius/2 && magnitudeVectorY < radius/2;
+  public boolean mouseColision(float endPos[]){
+      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+      return magnitudeVector < (radius/2);
   }
 }
   public void settings() {  fullScreen(); }

@@ -1,30 +1,34 @@
 class Obstacle{
   final int POSITIONX = 0;
   final int POSITIONY = 1;
-  final int BS = 100;
+  final int RADIUS = 100;
   final int MIN = 1;
-  final int MAXX = ceil(width/BS)-1;
-  final int MAXY = ceil(height/BS)-1;
-  int position[] = {0,0};
+  final int MAXX = ceil(width/RADIUS)-1;
+  final int MAXY = ceil(height/RADIUS)-1;
+  float position[] = {0.0f,0.0f};
 
   Obstacle(){
-    position[POSITIONX] = ceil(random(MIN,MAXX));
-    position[POSITIONY] = ceil(random(MIN,MAXY));
+    position[POSITIONX] = random(MIN,MAXX)*RADIUS;
+    position[POSITIONY] = random(MIN,MAXY)*RADIUS;
   }
 
-  public int getPosition(int i){
+  public float getPosition(int i){
+    float j = 0.0f;
     if(i == 0 || i == 1)
-      i = position[i];
-    return i;
+       j = position[i];
+    return j;
   }
+  public int getRadius(){
+      return RADIUS;
+    }
 
   void randomizePosition(){
-    position[POSITIONX] = ceil(random(MIN,MAXX));
-    position[POSITIONY] = ceil(random(MIN,MAXY));
+    position[POSITIONX] = ceil(random(MIN,MAXX))*RADIUS;
+    position[POSITIONY] = ceil(random(MIN,MAXY))*RADIUS;
   }
 
   void printObstacle(){
     strokeWeight(0);
-    ellipse(position[POSITIONX] * BS, position[POSITIONY] * BS, BS, BS );
+    ellipse(position[POSITIONX], position[POSITIONY], RADIUS, RADIUS );
   }
 }

@@ -10,9 +10,8 @@ class Player extends MovingObject{
     ellipse(position[POSITIONX], position[POSITIONY], radius, radius);
   }
 
-  public boolean mouseColision(int endPos[]){
-      magnitudeVectorX = ceil(sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONX] - position[POSITIONX],2)));
-      magnitudeVectorY = ceil(sqrt(pow(endPos[POSITIONY] - position[POSITIONY],2) + pow(endPos[POSITIONY] - position[POSITIONY],2)));
-      return magnitudeVectorX < radius/2 && magnitudeVectorY < radius/2;
+  public boolean mouseColision(float endPos[]){
+      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+      return magnitudeVector < (radius/2);
   }
 }

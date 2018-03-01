@@ -1,27 +1,28 @@
 class MovingObject{
   final int POSITIONX = 0;
   final int POSITIONY = 1;
-  int position[] = { 0, 0 };
+  float position[] = { 0, 0 };
   int radius = 20;
-  private int vectorX;
-  private int vectorY;
-  private int normalizedVectorX;
-  private int normalizedVectorY;
-  public int magnitudeVectorX;
-  public int magnitudeVectorY;
+  public float magnitudeVector;
 
-  public void moveTowards(int endPos[], int speed){
+  public void moveTowards(float endPos[], int speed){
+    float vectorX;
+    float vectorY;
     vectorX = endPos[POSITIONX] - position[POSITIONX];
     vectorY = endPos[POSITIONY] - position[POSITIONY];
-    normalizedVectorX = ceil((vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
-    normalizedVectorY = ceil((vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed);
-    position[POSITIONX] += normalizedVectorX;
-    position[POSITIONY] += normalizedVectorY;
+    position[POSITIONX] += (vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
+    position[POSITIONY] += (vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
   }
 
-  public boolean colision(int endPos[], int endRadius){
-      magnitudeVectorX = ceil(sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONX] - position[POSITIONX],2)));
-      magnitudeVectorY = ceil(sqrt(pow(endPos[POSITIONY] - position[POSITIONY],2) + pow(endPos[POSITIONY] - position[POSITIONY],2)));
-      return magnitudeVectorX < (endRadius*0.75+radius*0.75) && magnitudeVectorY < (endRadius*0.75+radius*0.75);
+  public boolean colision(float endPos[], int endRadius){
+      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+      return magnitudeVector < (endRadius * 0.5 + radius * 0.5);
+  }
+
+  public void colisionMovement(float colisionPos[], int radiusObstacle, int speed){
+    PVector v = new PVector(position[POSITIONX] - colisionPos[POSITIONX], position[POSITIONY] - colisionPos[POSITIONY]);
+    v.setMag(radiusObstacle/2 + radius/2 + 1);
+    position[POSITIONX] = v.x + colisionPos[POSITIONX];
+    position[POSITIONY] = v.y + colisionPos[POSITIONY];
   }
 }
