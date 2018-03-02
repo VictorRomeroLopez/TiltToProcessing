@@ -20,9 +20,14 @@ final int POSITIONY = 1;
 final int NUM_ENEMIES = 3;
 final int NUM_OBSTACLES = 3;
 final int SPEED = 10;
+final int TEXTSIZEAA1 = 200;
+final int TEXTSIZEEXIT = 32;
 int enemyGenerationSpeed = 15;
 boolean colisionObstacle;
+//variables de control del joc i dels menus
 boolean mainMenu;
+boolean gameEnd;
+
 int i = 0;
 int j = 0;
 float mousePointer[] = {0,0};
@@ -31,21 +36,26 @@ Obstacle obstacles[] = new Obstacle[NUM_OBSTACLES];
 Player player;
 //variables per la creaci\u00f3 de la sortida
 String EXITMESSAGE = "EXIT";
-float x1 = 0;
-float y1 = 0;
+float sortidaX1;
+float sortidaY1;
 final int TRIANGLEAREA = 200;
-
+//VARIABLES PER LA SELECCIO DE CONTROLS
+float titleX1 ;
+float titleY1;
 //Zona de setup
 public void setup()
 {
   //Pantalla complerta
   
-  mainMenu = true;
+  mainMenu = false;
+  gameEnd = true;
   player = new Player();
   //generaci\u00f3 del primer punt del triangle que ser\u00e0 la sortida
-  x1 = random(300, height-300);
-  y1 = x1+50;
+  sortidaX1 = random(300, height-300);
+  sortidaY1 = sortidaX1+50;
 
+  titleX1 = width/2;
+  titleY1 = height/2;
   for(int i = 0; i < obstacles.length; i++){
     obstacles[i] = new Obstacle();
   }
@@ -57,15 +67,10 @@ public void draw(){
   //Background blanc
   background(255);
 
-  while (mainMenu){
-
-    textSize(50);
-    text("AA1", width/2, height/2);
-
-
+  if(mainMenu){
+    theMainMenu();
   }
-
-  while(!mainMenu) {
+  else if (!mainMenu && !gameEnd){
   //Obtenim la possici\u00f3 del mouse
   mousePointer[0] = mouseX;
   mousePointer[1] = mouseY;
@@ -128,8 +133,15 @@ public void draw(){
       exit();
       }
     }
+
+  }
+  else{
+    fill(0);
+    textSize(TEXTSIZEAA1);
+    text("YOU WON", titleX1-TEXTSIZEAA1*2.5f, titleY1);
   }
 }
+
 
 
 public void generateExit(){
@@ -137,16 +149,16 @@ public void generateExit(){
 
   //generem un triangle equilater
   fill(233,200,0);
-  triangle(x1,y1,x1+(TRIANGLEAREA/2),y1,x1+(TRIANGLEAREA/4),y1-(TRIANGLEAREA/2));
+  triangle(sortidaX1,sortidaY1,sortidaX1+(TRIANGLEAREA/2),sortidaY1,sortidaX1+(TRIANGLEAREA/4),sortidaY1-(TRIANGLEAREA/2));
   fill(0);
-  textSize(32);
-  text(EXITMESSAGE,x1+TRIANGLEAREA/16,y1-TRIANGLEAREA/2);
+  textSize(TEXTSIZEEXIT);
+  text(EXITMESSAGE,sortidaX1+TRIANGLEAREA/4-TEXTSIZEEXIT,sortidaY1-TRIANGLEAREA/2);
 }
 
 public void mousePressed(){
-  println(' ');
-  println(player.position);
-  println(' ');
+  // println(' ');
+  // println(player.position);
+  // println(' ');
   if(!player.mouseColision(mousePointer))
     player.moveTowards(mousePointer, SPEED*10);
 }
@@ -174,6 +186,19 @@ public void printObstacles(){
   for(int i = 0; i< obstacles.length; i++){
     obstacles[i].printObstacle();
   }
+}
+
+public void theMainMenu(){
+  fill(0);
+  textSize(TEXTSIZEAA1);
+  text("AA1", titleX1-TEXTSIZEAA1, titleY1);
+
+
+  triangle(titleX1/2,titleY1,titleX1/2+(TRIANGLEAREA/2),titleY1,titleX1/2+(TRIANGLEAREA/4),titleY1-(TRIANGLEAREA/2));
+  textSize(TEXTSIZEEXIT);
+  text("KEYBOARD CONTROL",titleX1/2+TRIANGLEAREA/4-TEXTSIZEEXIT*4,titleY1-TRIANGLEAREA/2);
+  triangle(titleX1/2+titleX1,titleY1,titleX1/2+(TRIANGLEAREA/2)+titleX1,titleY1,titleX1/2+(TRIANGLEAREA/4)+titleX1,titleY1-(TRIANGLEAREA/2));
+  text("MICE CONTROL",titleX1/2+titleX1+TRIANGLEAREA/4-TEXTSIZEEXIT*4,titleY1-TRIANGLEAREA/2);
 }
 class Enemy extends MovingObject{
   Enemy(){
