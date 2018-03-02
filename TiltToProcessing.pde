@@ -17,7 +17,7 @@ Player player;
 void setup()
 {
   //Pantalla complerta
-  size(1080, 720);
+  fullScreen();
   player = new Player();
   for(int i = 0; i < obstacles.length; i++){
     obstacles[i] = new Obstacle();
