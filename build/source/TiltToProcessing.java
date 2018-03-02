@@ -228,7 +228,7 @@ class Player extends MovingObject{
       return magnitudeVector < (radius/2);
   }
 }
-  public void settings() {  fullScreen(); }
+  public void settings() {  size(1080, 720); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "TiltToProcessing" };
     if (passedArgs != null) {
