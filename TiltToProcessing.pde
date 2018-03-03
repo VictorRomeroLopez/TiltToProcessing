@@ -2,7 +2,7 @@
 final int POSITIONX = 0;
 final int POSITIONY = 1;
 final int NUM_ENEMIES = 25;
-final int NUM_OBSTACLES = 3;
+final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
 final int TEXTSIZEAA1 = 200;
 final int TEXTSIZEEXIT = 32;
@@ -37,8 +37,7 @@ void setup()
   gameEnd = false;
   player = new Player();
   //generació del primer punt del triangle que serà la sortida
-  sortidaXY[POSITIONX] = random(300, width-300);
-  sortidaXY[POSITIONY] = random(300, height-300);
+
 
   titleXY[POSITIONX] = width/2;
   titleXY[POSITIONY] = height/2;
@@ -46,6 +45,7 @@ void setup()
     obstacles[i] = new Obstacle();
   }
   generateObstacles();
+  generateExit();
 }
 
 //Zona de draw
@@ -100,6 +100,9 @@ void draw(){
       j++;
     }
   }
+  if (j >= enemies.length){
+    printExit();
+  }
   //aparició dels enemics a l'escenari i el persegueixen
   for( int k = 0; k<j; k++){
     enemies[k].pop();
@@ -125,10 +128,7 @@ void draw(){
     text("YOU WON", titleXY[POSITIONX]-TEXTSIZEAA1*2.5, titleXY[POSITIONY]);
   }
 }
-
-
-
-void generateExit(){
+void printExit(){
   //println(x1,y1,x1+(TRIANGLEAREA/2),y1,x1+(TRIANGLEAREA/4),y1-(TRIANGLEAREA/2));
 
   //generem un triangle equilater
@@ -147,6 +147,27 @@ void mousePressed(){
     player.moveTowards(mousePointer, SPEED*10);
 }
 
+void generateExit(){
+  char x = 'x';
+  char y = 'y';
+  sortidaXY[POSITIONX] = random(300, width-RADIUS);
+  sortidaXY[POSITIONY] = random(300, height-RADIUS);
+  for(int i = 0; i<obstacles.length; i++){
+    while ((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)){
+      sortidaXY[POSITIONX] = random(300, width-RADIUS);
+    }
+     println(x,i,sortidaXY[POSITIONX], obstacles[i].getPosition(POSITIONX));
+     println(x,i,obstacles[i].getPosition(POSITIONX)+RADIUS*2, obstacles[i].getPosition(POSITIONX)-RADIUS*2);
+     println(x,i,((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)));
+    while ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)){
+      sortidaXY[POSITIONY] = random(300, height-RADIUS);
+    }
+     println(y,i,sortidaXY[POSITIONY], obstacles[i].getPosition(POSITIONY));
+     println(y,i,obstacles[i].getPosition(POSITIONY)+RADIUS*2, obstacles[i].getPosition(POSITIONY)-RADIUS*2);
+     println(y,i, ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)));
+  }
+}
+
 void generateObstacles(){
   int i = 0;
   int counter = 0;
@@ -156,7 +177,7 @@ void generateObstacles(){
     counter = i;
     obstacles[i].randomizePosition();
     while(counter != 0){
-      if(obstacles[i].getPosition(POSITIONX) == obstacles[counter-1].getPosition(POSITIONX) && obstacles[i].getPosition(POSITIONY) == obstacles[counter-1].getPosition(POSITIONY)+100){
+      if(obstacles[i].getPosition(POSITIONX) <= (obstacles[counter-1].getPosition(POSITIONX))+RADIUS*2 && (obstacles[i].getPosition(POSITIONX) >= (obstacles[counter-1].getPosition(POSITIONX))-RADIUS*2) && obstacles[i].getPosition(POSITIONY) <= (obstacles[counter-1].getPosition(POSITIONY))+RADIUS*2 && (obstacles[i].getPosition(POSITIONY) >= (obstacles[counter-1].getPosition(POSITIONY))-RADIUS*2)){
       obstacles[i].randomizePosition();
         counter = i;
       }
