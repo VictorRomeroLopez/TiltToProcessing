@@ -1,7 +1,7 @@
 //Zona de variables
 final int POSITIONX = 0;
 final int POSITIONY = 1;
-final int NUM_ENEMIES = 3;
+final int NUM_ENEMIES = 1;
 final int NUM_OBSTACLES = 3;
 final int SPEED = 10;
 final int TEXTSIZEAA1 = 200;
@@ -11,6 +11,8 @@ boolean colisionObstacle;
 //variables de control del joc i dels menus
 boolean mainMenu;
 boolean gameEnd;
+boolean miceControl;
+boolean keyboardControl;
 
 int i = 0;
 int j = 0;
@@ -20,26 +22,25 @@ Obstacle obstacles[] = new Obstacle[NUM_OBSTACLES];
 Player player;
 //variables per la creació de la sortida
 String EXITMESSAGE = "EXIT";
-float sortidaX1;
-float sortidaY1;
-final int TRIANGLEAREA = 200;
+float sortidaXY[] = {0,0};
+
+final int RADIUS = 100;
 //VARIABLES PER LA SELECCIO DE CONTROLS
-float titleX1 ;
-float titleY1;
+float titleXY[] = {0,0};
 //Zona de setup
 void setup()
 {
   //Pantalla complerta
   fullScreen();
   mainMenu = false;
-  gameEnd = true;
+  gameEnd = false;
   player = new Player();
   //generació del primer punt del triangle que serà la sortida
-  sortidaX1 = random(300, height-300);
-  sortidaY1 = sortidaX1+50;
+  sortidaXY[POSITIONX] = random(300, width-300);
+  sortidaXY[POSITIONY] = random(300, height-300);
 
-  titleX1 = width/2;
-  titleY1 = height/2;
+  titleXY[POSITIONX] = width/2;
+  titleXY[POSITIONY] = height/2;
   for(int i = 0; i < obstacles.length; i++){
     obstacles[i] = new Obstacle();
   }
@@ -122,7 +123,7 @@ void draw(){
   else{
     fill(0);
     textSize(TEXTSIZEAA1);
-    text("YOU WON", titleX1-TEXTSIZEAA1*2.5, titleY1);
+    text("YOU WON", titleXY[POSITIONX]-TEXTSIZEAA1*2.5, titleXY[POSITIONY]);
   }
 }
 
@@ -133,10 +134,10 @@ void generateExit(){
 
   //generem un triangle equilater
   fill(233,200,0);
-  triangle(sortidaX1,sortidaY1,sortidaX1+(TRIANGLEAREA/2),sortidaY1,sortidaX1+(TRIANGLEAREA/4),sortidaY1-(TRIANGLEAREA/2));
+  ellipse(sortidaXY[POSITIONX],sortidaXY[POSITIONY],100,100);
   fill(0);
   textSize(TEXTSIZEEXIT);
-  text(EXITMESSAGE,sortidaX1+TRIANGLEAREA/4-TEXTSIZEEXIT,sortidaY1-TRIANGLEAREA/2);
+  text(EXITMESSAGE,sortidaXY[POSITIONX]-TEXTSIZEEXIT,sortidaXY[POSITIONY]-50);
 }
 
 void mousePressed(){
@@ -156,7 +157,7 @@ void generateObstacles(){
     counter = i;
     obstacles[i].randomizePosition();
     while(counter != 0){
-      if(obstacles[i].getPosition(POSITIONX) == obstacles[counter-1].getPosition(POSITIONX) && obstacles[i].getPosition(POSITIONY) == obstacles[counter-1].getPosition(POSITIONY)){
+      if(obstacles[i].getPosition(POSITIONX) == obstacles[counter-1].getPosition(POSITIONX) && obstacles[i].getPosition(POSITIONY) == obstacles[counter-1].getPosition(POSITIONY)+100){
       obstacles[i].randomizePosition();
         counter = i;
       }
@@ -175,12 +176,11 @@ void printObstacles(){
 void theMainMenu(){
   fill(0);
   textSize(TEXTSIZEAA1);
-  text("AA1", titleX1-TEXTSIZEAA1, titleY1);
+  text("AA1", titleXY[POSITIONX]-TEXTSIZEAA1, titleXY[POSITIONY]);
 
-
-  triangle(titleX1/2,titleY1,titleX1/2+(TRIANGLEAREA/2),titleY1,titleX1/2+(TRIANGLEAREA/4),titleY1-(TRIANGLEAREA/2));
+  ellipse(titleXY[POSITIONX]/2,titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
   textSize(TEXTSIZEEXIT);
-  text("KEYBOARD CONTROL",titleX1/2+TRIANGLEAREA/4-TEXTSIZEEXIT*4,titleY1-TRIANGLEAREA/2);
-  triangle(titleX1/2+titleX1,titleY1,titleX1/2+(TRIANGLEAREA/2)+titleX1,titleY1,titleX1/2+(TRIANGLEAREA/4)+titleX1,titleY1-(TRIANGLEAREA/2));
-  text("MICE CONTROL",titleX1/2+titleX1+TRIANGLEAREA/4-TEXTSIZEEXIT*4,titleY1-TRIANGLEAREA/2);
+  text("KEYBOARD CONTROL",titleXY[POSITIONX]/2+RADIUS/2-TEXTSIZEEXIT*6,titleXY[POSITIONY]-RADIUS);
+  ellipse(titleXY[POSITIONX]/2+titleXY[POSITIONX],titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
+  text("MICE CONTROL",titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS/3-TEXTSIZEEXIT*2,titleXY[POSITIONY]-RADIUS);
 }
