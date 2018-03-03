@@ -17,11 +17,12 @@ public class TiltToProcessing extends PApplet {
 //Zona de variables
 final int POSITIONX = 0;
 final int POSITIONY = 1;
-final int NUM_ENEMIES = 1;
+final int NUM_ENEMIES = 25;
 final int NUM_OBSTACLES = 3;
 final int SPEED = 10;
 final int TEXTSIZEAA1 = 200;
 final int TEXTSIZEEXIT = 32;
+final int PLAYER_SPAWN_AREA = 25;
 int enemyGenerationSpeed = 15;
 boolean colisionObstacle;
 //variables de control del joc i dels menus
@@ -84,9 +85,6 @@ public void draw(){
   player.pop();
   //moviment del jugador
 
-
-
-
   for(int i = 0; i < obstacles.length && !colisionObstacle ; i++){
     if(player.colision(obstacles[i].position, obstacles[i].getRadius())){
       colisionObstacle = true;
@@ -100,22 +98,24 @@ public void draw(){
     player.position[POSITIONY] = mouseY;
   }
 
-
-
-
-
   //generador d'ememics a l'array
   if(j<enemies.length){
     if(frameCount % enemyGenerationSpeed == 0){
       enemies[i] = new Enemy();
+      do{
+      colisionObstacle = false;
+      for(int l = 0; l < obstacles.length && !colisionObstacle ; l++){
+          if(enemies[i].colision(obstacles[l].position, obstacles[l].getRadius()) || enemies[i].colision(player.position, player.radius*PLAYER_SPAWN_AREA)){
+            colisionObstacle = true;
+            enemies[i].randomize();
+          }
+        }
+      }while(colisionObstacle);
       enemies[i].pop();
       i++;
       j++;
     }
   }
-  if (j >= enemies.length){
-      generateExit();
-    }
   //aparici\u00f3 dels enemics a l'escenari i el persegueixen
   for( int k = 0; k<j; k++){
     enemies[k].pop();
@@ -126,14 +126,13 @@ public void draw(){
         enemies[k].colisionMovement(obstacles[i].position, obstacles[i].getRadius(), SPEED);
       }
     }
-
     if(!colisionObstacle)
       enemies[k].moveTowards(player.position, ceil(random(1,SPEED-1)));
     //passa alguna cosa si els enemics toquen al player
     if(enemies[k].colision(player.position, player.radius)){
       exit();
-      }
     }
+  }
 
   }
   else{
@@ -202,6 +201,11 @@ public void theMainMenu(){
 }
 class Enemy extends MovingObject{
   Enemy(){
+    position[POSITIONX] = ceil(random(0,width));
+    position[POSITIONY] = ceil(random(0,height));
+  }
+
+  public void randomize(){
     position[POSITIONX] = ceil(random(0,width));
     position[POSITIONY] = ceil(random(0,height));
   }
