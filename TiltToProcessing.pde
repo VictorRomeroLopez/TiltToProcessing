@@ -1,7 +1,7 @@
 //Zona de variables
 final int POSITIONX = 0;
 final int POSITIONY = 1;
-final int NUM_ENEMIES = 25;
+final int NUM_ENEMIES = 10;
 final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
 final int TEXTSIZEAA1 = 200;
@@ -14,7 +14,8 @@ boolean mainMenu;
 boolean gameEnd;
 boolean miceControl;
 boolean keyboardControl;
-
+boolean keyboard;
+char inputKey;
 int i = 0;
 int j = 0;
 float mousePointer[] = {0,0};
@@ -27,7 +28,7 @@ float sortidaXY[] = {0,0};
 
 final int RADIUS = 100;
 //VARIABLES PER LA SELECCIO DE CONTROLS
-float titleXY[] = {0,0};
+float titleXY[] = {0.0f,0.0f};
 //Zona de setup
 void setup()
 {
@@ -35,6 +36,7 @@ void setup()
   fullScreen();
   mainMenu = false;
   gameEnd = false;
+  keyboard = true;
   player = new Player();
   //generació del primer punt del triangle que serà la sortida
 
@@ -52,7 +54,6 @@ void setup()
 void draw(){
   //Background blanc
   background(255);
-
   if(mainMenu){
     theMainMenu();
   }
@@ -68,20 +69,35 @@ void draw(){
   //fem apareixer el jugador
   player.pop();
   //moviment del jugador
-
+if (keyboard){
+    player.movementWithKeyboard(inputKey,SPEED);
+    if(player.position[POSITIONX] >= width){
+      player.position[POSITIONX] = width;
+    }
+    if(player.position[POSITIONX] <= 0){
+      player.position[POSITIONX] = 0;
+    }
+    if(player.position[POSITIONY] >= height){
+      player.position[POSITIONY] = height;
+    }
+    if(player.position[POSITIONY] <= 0){
+      player.position[POSITIONY] = 0;
+    }
+ }
   for(int i = 0; i < obstacles.length && !colisionObstacle ; i++){
     if(player.colision(obstacles[i].position, obstacles[i].getRadius())){
       colisionObstacle = true;
       player.colisionMovement(obstacles[i].position, obstacles[i].getRadius(), SPEED);
     }
   }
+ if(!keyboard){
   if (!colisionObstacle && !player.mouseColision(mousePointer)){
     player.moveTowards(mousePointer, SPEED);
   }else if(!colisionObstacle){
     player.position[POSITIONX] = mouseX;
     player.position[POSITIONY] = mouseY;
   }
-
+ }
   //generador d'ememics a l'array
   if(j<enemies.length){
     if(frameCount % enemyGenerationSpeed == 0){
@@ -114,18 +130,44 @@ void draw(){
       }
     }
     if(!colisionObstacle)
+    //genera una velocitat diferent cada cop que s executa
       enemies[k].moveTowards(player.position, ceil(random(1,SPEED-1)));
     //passa alguna cosa si els enemics toquen al player
     if(enemies[k].colision(player.position, player.radius)){
       exit();
+      // fill(255);
+      // textSize(TEXTSIZEAA1);
+      // fill(0);
+      // text("YOU LOST", titleXY[POSITIONX]-TEXTSIZEAA1*2.5, titleXY[POSITIONY]);
     }
   }
-
-  }
+}
   else{
     fill(0);
     textSize(TEXTSIZEAA1);
     text("YOU WON", titleXY[POSITIONX]-TEXTSIZEAA1*2.5, titleXY[POSITIONY]);
+  }
+}
+void generateExit(){
+  char x = 'x';
+  char y = 'y';
+  sortidaXY[POSITIONX] = random(RADIUS, width-RADIUS);
+  sortidaXY[POSITIONY] = random(RADIUS, height-RADIUS);
+  for(int i = 0; i<obstacles.length; i++){
+    //NO VAN ELS WHILES, TOT I SER FALSE ENTRA IGUAL
+    //CADA COP QUE CANVIA LA X O LA Y HEM DE SETEAR LA I A 0 UN ALTRE COP
+    while ((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)){
+      sortidaXY[POSITIONX] = random(RADIUS, width-RADIUS);
+    }
+     // println(x,i,sortidaXY[POSITIONX], obstacles[i].getPosition(POSITIONX));
+     // println(x,i,obstacles[i].getPosition(POSITIONX)+RADIUS*2, obstacles[i].getPosition(POSITIONX)-RADIUS*2);
+     // println(x,i,((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)));
+    while ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)){
+      sortidaXY[POSITIONY] = random(RADIUS, height-RADIUS);
+    }
+     // println(y,i,sortidaXY[POSITIONY], obstacles[i].getPosition(POSITIONY));
+     // println(y,i,obstacles[i].getPosition(POSITIONY)+RADIUS*2, obstacles[i].getPosition(POSITIONY)-RADIUS*2);
+     // println(y,i, ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)));
   }
 }
 void printExit(){
@@ -138,7 +180,6 @@ void printExit(){
   textSize(TEXTSIZEEXIT);
   text(EXITMESSAGE,sortidaXY[POSITIONX]-TEXTSIZEEXIT,sortidaXY[POSITIONY]-50);
 }
-
 void mousePressed(){
   // println(' ');
   // println(player.position);
@@ -146,28 +187,6 @@ void mousePressed(){
   if(!player.mouseColision(mousePointer))
     player.moveTowards(mousePointer, SPEED*10);
 }
-
-void generateExit(){
-  char x = 'x';
-  char y = 'y';
-  sortidaXY[POSITIONX] = random(300, width-RADIUS);
-  sortidaXY[POSITIONY] = random(300, height-RADIUS);
-  for(int i = 0; i<obstacles.length; i++){
-    while ((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)){
-      sortidaXY[POSITIONX] = random(300, width-RADIUS);
-    }
-     println(x,i,sortidaXY[POSITIONX], obstacles[i].getPosition(POSITIONX));
-     println(x,i,obstacles[i].getPosition(POSITIONX)+RADIUS*2, obstacles[i].getPosition(POSITIONX)-RADIUS*2);
-     println(x,i,((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)));
-    while ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)){
-      sortidaXY[POSITIONY] = random(300, height-RADIUS);
-    }
-     println(y,i,sortidaXY[POSITIONY], obstacles[i].getPosition(POSITIONY));
-     println(y,i,obstacles[i].getPosition(POSITIONY)+RADIUS*2, obstacles[i].getPosition(POSITIONY)-RADIUS*2);
-     println(y,i, ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)));
-  }
-}
-
 void generateObstacles(){
   int i = 0;
   int counter = 0;
@@ -186,13 +205,11 @@ void generateObstacles(){
     i++;
   }
 }
-
 void printObstacles(){
   for(int i = 0; i< obstacles.length; i++){
     obstacles[i].printObstacle();
   }
 }
-
 void theMainMenu(){
   fill(0);
   textSize(TEXTSIZEAA1);
@@ -203,4 +220,7 @@ void theMainMenu(){
   text("KEYBOARD CONTROL",titleXY[POSITIONX]/2+RADIUS/2-TEXTSIZEEXIT*6,titleXY[POSITIONY]-RADIUS);
   ellipse(titleXY[POSITIONX]/2+titleXY[POSITIONX],titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
   text("MICE CONTROL",titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS/3-TEXTSIZEEXIT*2,titleXY[POSITIONY]-RADIUS);
+}
+void keyTyped(){
+  inputKey = key;
 }

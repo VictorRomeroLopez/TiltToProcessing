@@ -14,34 +14,44 @@ class MovingObject{
     position[POSITIONY] += (vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
   }
 
-  public void movementWithKeyboard(char key, int speed){
-    float vectorKX = 0.0;
-    float vectorKY = 0.0;
-    switch (key) {
-      case 'w':
-      case 'W':
-        vectorKX = 0;
-        vectorKY = -1;
-      break;
-      case 'a':
-      case 'A':
-        vectorKX = -1;
-        vectorKY = 0;
-        break;
-      case 's':
-      case 'S':
-        vectorKX = 0;
-        vectorKY = 1;
-        break;
-      case 'D':
-      case 'd':
-        vectorKX = 1;
-        vectorKY = 0;
-        break;
-    }
-    position[POSITIONX] += (vectorKX/sqrt(pow(vectorKX,2)+pow(vectorKY,2)))*speed;
-    position[POSITIONY] += (vectorKY/sqrt(pow(vectorKX,2)+pow(vectorKY,2)))*speed;
+  public void movementWithKeyboard(char keyDown, int speed){
+    float vectorKX = 0.0f;
+    float vectorKY = 0.0f;
+    if(keyDown == 'w' || keyDown == 'W'){
+        vectorKX = 0.0f;
+        vectorKY = -1.0f;
+      }
+    if(keyDown == 'a' || keyDown == 'A'){
+        vectorKX = -1.0f;
+        vectorKY = 0.0f;
+      }
+    if(keyDown == 's' || keyDown == 'S'){
+        vectorKX = 0.0f;
+        vectorKY = 1.0f;
+      }
+    if(keyDown == 'd' || keyDown == 'D'){
+        vectorKX = 1.0f;
+        vectorKY = 0.0f;
+      }
+      if(keyDown == 'w' || keyDown == 'W' && keyDown == 'a' || keyDown == 'A'){
+          vectorKX = 1.0f;
+          vectorKY = -1.0f;
+        }
+      if(keyDown == 'w' || keyDown == 'W' && keyDown == 'd' || keyDown == 'D'){
+          vectorKX = -1.0f;
+          vectorKY = -1.0f;
+        }
+      if(keyDown == 's' || keyDown == 'S' && keyDown == 'a' || keyDown == 'A'){
+          vectorKX = 1.0f;
+          vectorKY =  1.0f;
+        }
+      if(keyDown == 's' || keyDown == 'S' && keyDown == 'd' || keyDown == 'D'){
+          vectorKX = -1.0f;
+          vectorKY = 1.0f;
+        }
 
+    position[POSITIONX] += vectorKX*speed;
+    position[POSITIONY] += vectorKY*speed;
   }
 
   public boolean colision(float endPos[], int endRadius){

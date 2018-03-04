@@ -17,7 +17,7 @@ public class TiltToProcessing extends PApplet {
 //Zona de variables
 final int POSITIONX = 0;
 final int POSITIONY = 1;
-final int NUM_ENEMIES = 25;
+final int NUM_ENEMIES = 10;
 final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
 final int TEXTSIZEAA1 = 200;
@@ -30,7 +30,8 @@ boolean mainMenu;
 boolean gameEnd;
 boolean miceControl;
 boolean keyboardControl;
-
+boolean keyboard;
+char inputKey;
 int i = 0;
 int j = 0;
 float mousePointer[] = {0,0};
@@ -43,7 +44,7 @@ float sortidaXY[] = {0,0};
 
 final int RADIUS = 100;
 //VARIABLES PER LA SELECCIO DE CONTROLS
-float titleXY[] = {0,0};
+float titleXY[] = {0.0f,0.0f};
 //Zona de setup
 public void setup()
 {
@@ -51,6 +52,7 @@ public void setup()
   
   mainMenu = false;
   gameEnd = false;
+  keyboard = true;
   player = new Player();
   //generaci\u00f3 del primer punt del triangle que ser\u00e0 la sortida
 
@@ -68,7 +70,6 @@ public void setup()
 public void draw(){
   //Background blanc
   background(255);
-
   if(mainMenu){
     theMainMenu();
   }
@@ -84,20 +85,35 @@ public void draw(){
   //fem apareixer el jugador
   player.pop();
   //moviment del jugador
-
+if (keyboard){
+    player.movementWithKeyboard(inputKey,SPEED);
+    if(player.position[POSITIONX] >= width){
+      player.position[POSITIONX] = width;
+    }
+    if(player.position[POSITIONX] <= 0){
+      player.position[POSITIONX] = 0;
+    }
+    if(player.position[POSITIONY] >= height){
+      player.position[POSITIONY] = height;
+    }
+    if(player.position[POSITIONY] <= 0){
+      player.position[POSITIONY] = 0;
+    }
+ }
   for(int i = 0; i < obstacles.length && !colisionObstacle ; i++){
     if(player.colision(obstacles[i].position, obstacles[i].getRadius())){
       colisionObstacle = true;
       player.colisionMovement(obstacles[i].position, obstacles[i].getRadius(), SPEED);
     }
   }
+ if(!keyboard){
   if (!colisionObstacle && !player.mouseColision(mousePointer)){
     player.moveTowards(mousePointer, SPEED);
   }else if(!colisionObstacle){
     player.position[POSITIONX] = mouseX;
     player.position[POSITIONY] = mouseY;
   }
-
+ }
   //generador d'ememics a l'array
   if(j<enemies.length){
     if(frameCount % enemyGenerationSpeed == 0){
@@ -130,18 +146,44 @@ public void draw(){
       }
     }
     if(!colisionObstacle)
+    //genera una velocitat diferent cada cop que s executa
       enemies[k].moveTowards(player.position, ceil(random(1,SPEED-1)));
     //passa alguna cosa si els enemics toquen al player
     if(enemies[k].colision(player.position, player.radius)){
       exit();
+      // fill(255);
+      // textSize(TEXTSIZEAA1);
+      // fill(0);
+      // text("YOU LOST", titleXY[POSITIONX]-TEXTSIZEAA1*2.5, titleXY[POSITIONY]);
     }
   }
-
-  }
+}
   else{
     fill(0);
     textSize(TEXTSIZEAA1);
     text("YOU WON", titleXY[POSITIONX]-TEXTSIZEAA1*2.5f, titleXY[POSITIONY]);
+  }
+}
+public void generateExit(){
+  char x = 'x';
+  char y = 'y';
+  sortidaXY[POSITIONX] = random(RADIUS, width-RADIUS);
+  sortidaXY[POSITIONY] = random(RADIUS, height-RADIUS);
+  for(int i = 0; i<obstacles.length; i++){
+    //NO VAN ELS WHILES, TOT I SER FALSE ENTRA IGUAL
+    //CADA COP QUE CANVIA LA X O LA Y HEM DE SETEAR LA I A 0 UN ALTRE COP
+    while ((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)){
+      sortidaXY[POSITIONX] = random(RADIUS, width-RADIUS);
+    }
+     // println(x,i,sortidaXY[POSITIONX], obstacles[i].getPosition(POSITIONX));
+     // println(x,i,obstacles[i].getPosition(POSITIONX)+RADIUS*2, obstacles[i].getPosition(POSITIONX)-RADIUS*2);
+     // println(x,i,((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)));
+    while ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)){
+      sortidaXY[POSITIONY] = random(RADIUS, height-RADIUS);
+    }
+     // println(y,i,sortidaXY[POSITIONY], obstacles[i].getPosition(POSITIONY));
+     // println(y,i,obstacles[i].getPosition(POSITIONY)+RADIUS*2, obstacles[i].getPosition(POSITIONY)-RADIUS*2);
+     // println(y,i, ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)));
   }
 }
 public void printExit(){
@@ -154,7 +196,6 @@ public void printExit(){
   textSize(TEXTSIZEEXIT);
   text(EXITMESSAGE,sortidaXY[POSITIONX]-TEXTSIZEEXIT,sortidaXY[POSITIONY]-50);
 }
-
 public void mousePressed(){
   // println(' ');
   // println(player.position);
@@ -162,28 +203,6 @@ public void mousePressed(){
   if(!player.mouseColision(mousePointer))
     player.moveTowards(mousePointer, SPEED*10);
 }
-
-public void generateExit(){
-  char x = 'x';
-  char y = 'y';
-  sortidaXY[POSITIONX] = random(300, width-RADIUS);
-  sortidaXY[POSITIONY] = random(300, height-RADIUS);
-  for(int i = 0; i<obstacles.length; i++){
-    while ((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)){
-      sortidaXY[POSITIONX] = random(300, width-RADIUS);
-    }
-     println(x,i,sortidaXY[POSITIONX], obstacles[i].getPosition(POSITIONX));
-     println(x,i,obstacles[i].getPosition(POSITIONX)+RADIUS*2, obstacles[i].getPosition(POSITIONX)-RADIUS*2);
-     println(x,i,((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)));
-    while ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)){
-      sortidaXY[POSITIONY] = random(300, height-RADIUS);
-    }
-     println(y,i,sortidaXY[POSITIONY], obstacles[i].getPosition(POSITIONY));
-     println(y,i,obstacles[i].getPosition(POSITIONY)+RADIUS*2, obstacles[i].getPosition(POSITIONY)-RADIUS*2);
-     println(y,i, ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)));
-  }
-}
-
 public void generateObstacles(){
   int i = 0;
   int counter = 0;
@@ -202,13 +221,11 @@ public void generateObstacles(){
     i++;
   }
 }
-
 public void printObstacles(){
   for(int i = 0; i< obstacles.length; i++){
     obstacles[i].printObstacle();
   }
 }
-
 public void theMainMenu(){
   fill(0);
   textSize(TEXTSIZEAA1);
@@ -219,6 +236,9 @@ public void theMainMenu(){
   text("KEYBOARD CONTROL",titleXY[POSITIONX]/2+RADIUS/2-TEXTSIZEEXIT*6,titleXY[POSITIONY]-RADIUS);
   ellipse(titleXY[POSITIONX]/2+titleXY[POSITIONX],titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
   text("MICE CONTROL",titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS/3-TEXTSIZEEXIT*2,titleXY[POSITIONY]-RADIUS);
+}
+public void keyTyped(){
+  inputKey = key;
 }
 class Enemy extends MovingObject{
   Enemy(){
@@ -253,34 +273,44 @@ class MovingObject{
     position[POSITIONY] += (vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
   }
 
-  public void movementWithKeyboard(char key, int speed){
+  public void movementWithKeyboard(char keyDown, int speed){
     float vectorKX = 0.0f;
     float vectorKY = 0.0f;
-    switch (key) {
-      case 'w':
-      case 'W':
-        vectorKX = 0;
-        vectorKY = -1;
-      break;
-      case 'a':
-      case 'A':
-        vectorKX = -1;
-        vectorKY = 0;
-        break;
-      case 's':
-      case 'S':
-        vectorKX = 0;
-        vectorKY = 1;
-        break;
-      case 'D':
-      case 'd':
-        vectorKX = 1;
-        vectorKY = 0;
-        break;
-    }
-    position[POSITIONX] += (vectorKX/sqrt(pow(vectorKX,2)+pow(vectorKY,2)))*speed;
-    position[POSITIONY] += (vectorKY/sqrt(pow(vectorKX,2)+pow(vectorKY,2)))*speed;
+    if(keyDown == 'w' || keyDown == 'W'){
+        vectorKX = 0.0f;
+        vectorKY = -1.0f;
+      }
+    if(keyDown == 'a' || keyDown == 'A'){
+        vectorKX = -1.0f;
+        vectorKY = 0.0f;
+      }
+    if(keyDown == 's' || keyDown == 'S'){
+        vectorKX = 0.0f;
+        vectorKY = 1.0f;
+      }
+    if(keyDown == 'd' || keyDown == 'D'){
+        vectorKX = 1.0f;
+        vectorKY = 0.0f;
+      }
+      if(keyDown == 'w' || keyDown == 'W' && keyDown == 'a' || keyDown == 'A'){
+          vectorKX = 1.0f;
+          vectorKY = -1.0f;
+        }
+      if(keyDown == 'w' || keyDown == 'W' && keyDown == 'd' || keyDown == 'D'){
+          vectorKX = -1.0f;
+          vectorKY = -1.0f;
+        }
+      if(keyDown == 's' || keyDown == 'S' && keyDown == 'a' || keyDown == 'A'){
+          vectorKX = 1.0f;
+          vectorKY =  1.0f;
+        }
+      if(keyDown == 's' || keyDown == 'S' && keyDown == 'd' || keyDown == 'D'){
+          vectorKX = -1.0f;
+          vectorKY = 1.0f;
+        }
 
+    position[POSITIONX] += vectorKX*speed;
+    position[POSITIONY] += vectorKY*speed;
   }
 
   public boolean colision(float endPos[], int endRadius){
@@ -320,8 +350,8 @@ class Obstacle{
     }
 
   public void randomizePosition(){
-    position[POSITIONX] = ceil(random(MIN,MAXX))*RADIUS;
-    position[POSITIONY] = ceil(random(MIN,MAXY))*RADIUS;
+    position[POSITIONX] = (random(MIN,MAXX))*RADIUS;
+    position[POSITIONY] = (random(MIN,MAXY))*RADIUS;
   }
 
   public void printObstacle(){

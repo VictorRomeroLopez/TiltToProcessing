@@ -23,8 +23,8 @@ class Obstacle{
     }
 
   void randomizePosition(){
-    position[POSITIONX] = ceil(random(MIN,MAXX))*RADIUS;
-    position[POSITIONY] = ceil(random(MIN,MAXY))*RADIUS;
+    position[POSITIONX] = (random(MIN,MAXX))*RADIUS;
+    position[POSITIONY] = (random(MIN,MAXY))*RADIUS;
   }
 
   void printObstacle(){
