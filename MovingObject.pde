@@ -4,6 +4,7 @@ class MovingObject{
   float position[] = { 0, 0 };
   int radius = 20;
   public float magnitudeVector;
+  int speed;
 
   public void moveTowards(float endPos[], int speed){
     float vectorX;
