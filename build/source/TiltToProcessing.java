@@ -16,7 +16,7 @@ public class TiltToProcessing extends PApplet {
 
 final int POSITIONX = 0;
 final int POSITIONY = 1;
-final int NUM_ENEMIES = 40;
+final int NUM_ENEMIES = 1;
 final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
 final int TEXTSIZEAA1 = 200;
@@ -49,11 +49,12 @@ float mousePointer[] = {0,0};
 Enemy enemies[] = new Enemy[NUM_ENEMIES];
 Obstacle obstacles[] = new Obstacle[NUM_OBSTACLES];
 Player player;
+Exit exit;
 //variables per la creaci\u00f3 de la sortida
 String EXITMESSAGE = "EXIT";
-float sortidaXY[] = {0,0};
 
 final int RADIUS = 100;
+
 //VARIABLES PER LA SELECCIO DE CONTROLS
 float titleXY[] = {0.0f,0.0f};
 //Zona de setup
@@ -76,11 +77,16 @@ public void setup()
 
   titleXY[POSITIONX] = width/2;
   titleXY[POSITIONY] = height/2;
+  exit = new Exit();
   for(int i = 0; i < obstacles.length; i++){
     obstacles[i] = new Obstacle();
   }
   generateObstacles();
-  generateExit();
+  for(int i=0; i<obstacles.length; i++){
+    if(!exit.generateExit(player, obstacles[i], obstacles.length)){
+      i = 0;
+    }
+  }
 }
 
 //Zona de draw
@@ -104,7 +110,7 @@ public void draw(){
   //fem apareixer el jugador
   player.pop();
   //moviment del jugador
-if (keyboard){
+  if (keyboard){
     player.movementWithKeyboard(inputKeyUp ,inputKeyDown, inputKeyLeft, inputKeyRight,SPEED);
     if(player.position[POSITIONX] >= width){
       player.position[POSITIONX] = width;
@@ -118,7 +124,9 @@ if (keyboard){
     if(player.position[POSITIONY] <= 0){
       player.position[POSITIONY] = 0;
     }
- }
+  }
+  if(player.colision(exit.position,exit.getRadius()))
+    exit();
   for(int i = 0; i < obstacles.length && !colisionObstacle ; i++){
     if(player.colision(obstacles[i].position, obstacles[i].getRadius())){
       colisionObstacle = true;
@@ -152,7 +160,7 @@ if (keyboard){
     }
   }
   if (j >= enemies.length){
-    printExit();
+    exit.printExit();
   }
   //aparici\u00f3 dels enemics a l'escenari i el persegueixen
   for( int k = 0; k<j; k++){
@@ -176,45 +184,15 @@ if (keyboard){
       // text("YOU LOST", titleXY[POSITIONX]-TEXTSIZEAA1*2.5, titleXY[POSITIONY]);
     }
   }
-}
+  }
   else{
     fill(0);
     textSize(TEXTSIZEAA1);
     text("YOU WON", titleXY[POSITIONX]-TEXTSIZEAA1*2.5f, titleXY[POSITIONY]);
   }
 }
-public void generateExit(){
-  char x = 'x';
-  char y = 'y';
-  sortidaXY[POSITIONX] = random(RADIUS, width-RADIUS);
-  sortidaXY[POSITIONY] = random(RADIUS, height-RADIUS);
-  for(int i = 0; i<obstacles.length; i++){
-    //NO VAN ELS WHILES, TOT I SER FALSE ENTRA IGUAL
-    //CADA COP QUE CANVIA LA X O LA Y HEM DE SETEAR LA I A 0 UN ALTRE COP
-    while ((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)){
-      sortidaXY[POSITIONX] = random(RADIUS, width-RADIUS);
-    }
-     // println(x,i,sortidaXY[POSITIONX], obstacles[i].getPosition(POSITIONX));
-     // println(x,i,obstacles[i].getPosition(POSITIONX)+RADIUS*2, obstacles[i].getPosition(POSITIONX)-RADIUS*2);
-     // println(x,i,((sortidaXY[POSITIONX] <= obstacles[i].getPosition(POSITIONX)+RADIUS*2) && (sortidaXY[POSITIONX] >= obstacles[i].getPosition(POSITIONX)-RADIUS*2)));
-    while ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)){
-      sortidaXY[POSITIONY] = random(RADIUS, height-RADIUS);
-    }
-     // println(y,i,sortidaXY[POSITIONY], obstacles[i].getPosition(POSITIONY));
-     // println(y,i,obstacles[i].getPosition(POSITIONY)+RADIUS*2, obstacles[i].getPosition(POSITIONY)-RADIUS*2);
-     // println(y,i, ((sortidaXY[POSITIONY] <= obstacles[i].getPosition(POSITIONY)+RADIUS*2) && (sortidaXY[POSITIONY] >= obstacles[i].getPosition(POSITIONY)-RADIUS*2)));
-  }
-}
-public void printExit(){
-  //println(x1,y1,x1+(TRIANGLEAREA/2),y1,x1+(TRIANGLEAREA/4),y1-(TRIANGLEAREA/2));
 
-  //generem un triangle equilater
-  fill(233,200,0);
-  ellipse(sortidaXY[POSITIONX],sortidaXY[POSITIONY],100,100);
-  fill(0);
-  textSize(TEXTSIZEEXIT);
-  text(EXITMESSAGE,sortidaXY[POSITIONX]-TEXTSIZEEXIT,sortidaXY[POSITIONY]-50);
-}
+
 public void generateObstacles(){
   int i = 0;
   int counter = 0;
@@ -224,10 +202,10 @@ public void generateObstacles(){
     counter = i;
     obstacles[i].randomizePosition();
     while(counter != 0){
-      if(obstacles[i].getPosition(POSITIONX) <= (obstacles[counter-1].getPosition(POSITIONX))+RADIUS*2 && (obstacles[i].getPosition(POSITIONX) >= (obstacles[counter-1].getPosition(POSITIONX))-RADIUS*2)
-       && obstacles[i].getPosition(POSITIONY) <= (obstacles[counter-1].getPosition(POSITIONY))+RADIUS*2 && (obstacles[i].getPosition(POSITIONY) >= (obstacles[counter-1].getPosition(POSITIONY))-RADIUS*2)){
-      obstacles[i].randomizePosition();
-        counter = i;
+      // if(obstacles[i].getPosition(POSITIONX) <= (obstacles[counter-1].getPosition(POSITIONX))+RADIUS*2 && (obstacles[i].getPosition(POSITIONX) >= (obstacles[counter-1].getPosition(POSITIONX))-RADIUS*2) && obstacles[i].getPosition(POSITIONY) <= (obstacles[counter-1].getPosition(POSITIONY))+RADIUS*2 && (obstacles[i].getPosition(POSITIONY) >= (obstacles[counter-1].getPosition(POSITIONY))-RADIUS*2)){
+      if(obstacles[i].colision(obstacles[counter-1].position, 100)){
+         obstacles[i].randomizePosition();
+         counter = i;
       }
       counter--;
     }
@@ -304,9 +282,6 @@ public void controlSelection(){
   if(mousePointer[POSITIONY] > titleXY[POSITIONY] +RADIUS -TEXTSIZEEXIT || mousePointer[POSITIONY]< titleXY[POSITIONY]-RADIUS -TEXTSIZEEXIT){
     selectionMiceY = false;
   }
-
-
-
 }
 public void keyPressed(){
   if (key == 'w' || key == 'W' && !inputKeyUp)
@@ -346,6 +321,50 @@ class Enemy extends MovingObject{
     ellipse(position[POSITIONX], position[POSITIONY], radius, radius);
   }
 }
+class Exit {
+  final int POSITIONX = 0;
+  final int POSITIONY = 1;
+  final int RADIUS = 100;
+  boolean succesfullyDone;
+  float position[] = {0,0};
+  float magnitudeVector;
+
+  Exit(){
+    position[POSITIONX] = random(RADIUS, width-RADIUS);
+    position[POSITIONY] = random(RADIUS, height-RADIUS);
+  }
+
+  public int getRadius(){
+      return RADIUS;
+  }
+
+  public boolean generateExit(Player player, Obstacle obstacles, int lengthObstacles){
+      //NO VAN ELS WHILES, TOT I SER FALSE ENTRA IGUAL
+      //CADA COP QUE CANVIA LA X O LA Y HEM DE SETEAR LA I A 0 UN ALTRE COP
+      if (colision(obstacles.position, obstacles.getRadius()) || colision(player.position, player.getRadius())){
+        position[POSITIONX] = random(RADIUS, width-RADIUS);
+        position[POSITIONY] = random(RADIUS, height-RADIUS);
+        return false;
+      }
+      return true;
+  }
+
+  public void printExit(){
+    //println(x1,y1,x1+(TRIANGLEAREA/2),y1,x1+(TRIANGLEAREA/4),y1-(TRIANGLEAREA/2));
+
+    //generem un triangle equilater
+    fill(233,200,0);
+    ellipse(position[POSITIONX],position[POSITIONY],100,100);
+    fill(0);
+    textSize(TEXTSIZEEXIT);
+    text(EXITMESSAGE,position[POSITIONX]-TEXTSIZEEXIT,position[POSITIONY]-50);
+  }
+
+  public boolean colision(float endPos[], int endRadius){
+      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+      return magnitudeVector < (endRadius * 0.5f + RADIUS * 0.5f);
+  }
+}
 class MovingObject{
   final int POSITIONX = 0;
   final int POSITIONY = 1;
@@ -354,6 +373,11 @@ class MovingObject{
   public float magnitudeVector;
   int speed;
 
+
+  public int getRadius(){
+    return radius;
+  }
+  
   public void moveTowards(float endPos[], int speed){
     float vectorX;
     float vectorY;
@@ -424,6 +448,7 @@ class Obstacle{
   final int MAXX = ceil(width/RADIUS)-1;
   final int MAXY = ceil(height/RADIUS)-1;
   float position[] = {0.0f,0.0f};
+  public float magnitudeVector;
 
   Obstacle(){
     position[POSITIONX] = random(MIN,MAXX)*RADIUS;
@@ -438,7 +463,7 @@ class Obstacle{
   }
   public int getRadius(){
       return RADIUS;
-    }
+  }
 
   public void randomizePosition(){
     position[POSITIONX] = (random(MIN,MAXX))*RADIUS;
@@ -448,6 +473,11 @@ class Obstacle{
   public void printObstacle(){
     strokeWeight(0);
     ellipse(position[POSITIONX], position[POSITIONY], RADIUS, RADIUS );
+  }
+
+  public boolean colision(float endPos[], int endRadius){
+      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+      return magnitudeVector < (endRadius * 0.5f + RADIUS * 0.5f);
   }
 }
 class Player extends MovingObject{

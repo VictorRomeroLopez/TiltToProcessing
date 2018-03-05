@@ -6,6 +6,11 @@ class MovingObject{
   public float magnitudeVector;
   int speed;
 
+
+  public int getRadius(){
+    return radius;
+  }
+  
   public void moveTowards(float endPos[], int speed){
     float vectorX;
     float vectorY;
