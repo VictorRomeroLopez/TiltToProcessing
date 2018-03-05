@@ -1,7 +1,6 @@
-//Zona de variables
 final int POSITIONX = 0;
 final int POSITIONY = 1;
-final int NUM_ENEMIES = 10;
+final int NUM_ENEMIES = 40;
 final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
 final int TEXTSIZEAA1 = 200;
@@ -15,7 +14,12 @@ boolean gameEnd;
 boolean miceControl;
 boolean keyboardControl;
 boolean keyboard;
-char inputKey;
+
+boolean inputKeyUp;
+boolean inputKeyDown;
+boolean inputKeyRight;
+boolean inputKeyLeft;
+
 int i = 0;
 int j = 0;
 float mousePointer[] = {0,0};
@@ -39,7 +43,10 @@ void setup()
   keyboard = true;
   player = new Player();
   //generació del primer punt del triangle que serà la sortida
-
+  inputKeyUp = false;
+  inputKeyDown = false;
+  inputKeyRight = false;
+  inputKeyLeft = false;
 
   titleXY[POSITIONX] = width/2;
   titleXY[POSITIONY] = height/2;
@@ -70,7 +77,7 @@ void draw(){
   player.pop();
   //moviment del jugador
 if (keyboard){
-    player.movementWithKeyboard(inputKey,SPEED);
+    player.movementWithKeyboard(inputKeyUp ,inputKeyDown, inputKeyLeft, inputKeyRight,SPEED);
     if(player.position[POSITIONX] >= width){
       player.position[POSITIONX] = width;
     }
@@ -221,6 +228,23 @@ void theMainMenu(){
   ellipse(titleXY[POSITIONX]/2+titleXY[POSITIONX],titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
   text("MICE CONTROL",titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS/3-TEXTSIZEEXIT*2,titleXY[POSITIONY]-RADIUS);
 }
-void keyTyped(){
-  inputKey = key;
+void keyPressed(){
+  if (key == 'w' || key == 'W' && !inputKeyUp)
+    inputKeyUp = true;
+  else if (key == 's' || key == 'S' && !inputKeyDown)
+    inputKeyDown = true;
+  else if (key == 'a' || key == 'A' && !inputKeyLeft)
+    inputKeyLeft = true;
+  else if (key == 'd' || key == 'D' && !inputKeyRight)
+    inputKeyRight = true;
+}
+void keyReleased(){
+  if (key == 'w' || key == 'W' && inputKeyUp)
+    inputKeyUp =  false;
+  else if (key == 's' || key == 'S' && inputKeyDown)
+    inputKeyDown =  false;
+  else if (key == 'a' || key == 'A' && inputKeyLeft)
+    inputKeyLeft =  false;
+  else if (key == 'd' || key == 'D' && inputKeyRight)
+    inputKeyRight = false;
 }

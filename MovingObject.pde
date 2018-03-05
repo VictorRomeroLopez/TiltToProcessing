@@ -14,41 +14,42 @@ class MovingObject{
     position[POSITIONY] += (vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
   }
 
-  public void movementWithKeyboard(char keyDown, int speed){
+  public void movementWithKeyboard(boolean keyInputUp,boolean keyInputDown,boolean keyInputLeft,boolean keyInputRigth, int speed){
     float vectorKX = 0.0f;
     float vectorKY = 0.0f;
-    if(keyDown == 'w' || keyDown == 'W'){
+    if(keyInputUp && keyInputLeft){
+        vectorKX = -0.5f;
+        vectorKY = -0.5f;
+        }
+    else if(keyInputUp && keyInputRigth){
+        vectorKX = 0.5f;
+        vectorKY = -0.5f;
+        }
+    else if(keyInputDown && keyInputLeft){
+        vectorKX = -0.5f;
+        vectorKY = 0.5f;
+        }
+    else if(keyInputDown && keyInputRigth){
+        vectorKX = 0.5f;
+        vectorKY = 0.5f;
+        }
+    else if(keyInputUp){
         vectorKX = 0.0f;
         vectorKY = -1.0f;
       }
-    if(keyDown == 'a' || keyDown == 'A'){
+    else if(keyInputLeft){
         vectorKX = -1.0f;
         vectorKY = 0.0f;
       }
-    if(keyDown == 's' || keyDown == 'S'){
+    else if(keyInputDown){
         vectorKX = 0.0f;
         vectorKY = 1.0f;
       }
-    if(keyDown == 'd' || keyDown == 'D'){
+    else if(keyInputRigth){
         vectorKX = 1.0f;
         vectorKY = 0.0f;
       }
-      if(keyDown == 'w' || keyDown == 'W' && keyDown == 'a' || keyDown == 'A'){
-          vectorKX = 1.0f;
-          vectorKY = -1.0f;
-        }
-      if(keyDown == 'w' || keyDown == 'W' && keyDown == 'd' || keyDown == 'D'){
-          vectorKX = -1.0f;
-          vectorKY = -1.0f;
-        }
-      if(keyDown == 's' || keyDown == 'S' && keyDown == 'a' || keyDown == 'A'){
-          vectorKX = 1.0f;
-          vectorKY =  1.0f;
-        }
-      if(keyDown == 's' || keyDown == 'S' && keyDown == 'd' || keyDown == 'D'){
-          vectorKX = -1.0f;
-          vectorKY = 1.0f;
-        }
+
 
     position[POSITIONX] += vectorKX*speed;
     position[POSITIONY] += vectorKY*speed;

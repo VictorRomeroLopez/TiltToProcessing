@@ -14,10 +14,9 @@ import java.io.IOException;
 
 public class TiltToProcessing extends PApplet {
 
-//Zona de variables
 final int POSITIONX = 0;
 final int POSITIONY = 1;
-final int NUM_ENEMIES = 10;
+final int NUM_ENEMIES = 40;
 final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
 final int TEXTSIZEAA1 = 200;
@@ -31,7 +30,12 @@ boolean gameEnd;
 boolean miceControl;
 boolean keyboardControl;
 boolean keyboard;
-char inputKey;
+
+boolean inputKeyUp;
+boolean inputKeyDown;
+boolean inputKeyRight;
+boolean inputKeyLeft;
+
 int i = 0;
 int j = 0;
 float mousePointer[] = {0,0};
@@ -55,7 +59,10 @@ public void setup()
   keyboard = true;
   player = new Player();
   //generaci\u00f3 del primer punt del triangle que ser\u00e0 la sortida
-
+  inputKeyUp = false;
+  inputKeyDown = false;
+  inputKeyRight = false;
+  inputKeyLeft = false;
 
   titleXY[POSITIONX] = width/2;
   titleXY[POSITIONY] = height/2;
@@ -86,7 +93,7 @@ public void draw(){
   player.pop();
   //moviment del jugador
 if (keyboard){
-    player.movementWithKeyboard(inputKey,SPEED);
+    player.movementWithKeyboard(inputKeyUp ,inputKeyDown, inputKeyLeft, inputKeyRight,SPEED);
     if(player.position[POSITIONX] >= width){
       player.position[POSITIONX] = width;
     }
@@ -237,8 +244,25 @@ public void theMainMenu(){
   ellipse(titleXY[POSITIONX]/2+titleXY[POSITIONX],titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
   text("MICE CONTROL",titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS/3-TEXTSIZEEXIT*2,titleXY[POSITIONY]-RADIUS);
 }
-public void keyTyped(){
-  inputKey = key;
+public void keyPressed(){
+  if (key == 'w' || key == 'W' && !inputKeyUp)
+    inputKeyUp = true;
+  else if (key == 's' || key == 'S' && !inputKeyDown)
+    inputKeyDown = true;
+  else if (key == 'a' || key == 'A' && !inputKeyLeft)
+    inputKeyLeft = true;
+  else if (key == 'd' || key == 'D' && !inputKeyRight)
+    inputKeyRight = true;
+}
+public void keyReleased(){
+  if (key == 'w' || key == 'W' && inputKeyUp)
+    inputKeyUp =  false;
+  else if (key == 's' || key == 'S' && inputKeyDown)
+    inputKeyDown =  false;
+  else if (key == 'a' || key == 'A' && inputKeyLeft)
+    inputKeyLeft =  false;
+  else if (key == 'd' || key == 'D' && inputKeyRight)
+    inputKeyRight = false;
 }
 class Enemy extends MovingObject{
   Enemy(){
@@ -273,41 +297,42 @@ class MovingObject{
     position[POSITIONY] += (vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
   }
 
-  public void movementWithKeyboard(char keyDown, int speed){
+  public void movementWithKeyboard(boolean keyInputUp,boolean keyInputDown,boolean keyInputLeft,boolean keyInputRigth, int speed){
     float vectorKX = 0.0f;
     float vectorKY = 0.0f;
-    if(keyDown == 'w' || keyDown == 'W'){
+    if(keyInputUp && keyInputLeft){
+        vectorKX = -0.5f;
+        vectorKY = -0.5f;
+        }
+    else if(keyInputUp && keyInputRigth){
+        vectorKX = 0.5f;
+        vectorKY = -0.5f;
+        }
+    else if(keyInputDown && keyInputLeft){
+        vectorKX = -0.5f;
+        vectorKY = 0.5f;
+        }
+    else if(keyInputDown && keyInputRigth){
+        vectorKX = 0.5f;
+        vectorKY = 0.5f;
+        }
+    else if(keyInputUp){
         vectorKX = 0.0f;
         vectorKY = -1.0f;
       }
-    if(keyDown == 'a' || keyDown == 'A'){
+    else if(keyInputLeft){
         vectorKX = -1.0f;
         vectorKY = 0.0f;
       }
-    if(keyDown == 's' || keyDown == 'S'){
+    else if(keyInputDown){
         vectorKX = 0.0f;
         vectorKY = 1.0f;
       }
-    if(keyDown == 'd' || keyDown == 'D'){
+    else if(keyInputRigth){
         vectorKX = 1.0f;
         vectorKY = 0.0f;
       }
-      if(keyDown == 'w' || keyDown == 'W' && keyDown == 'a' || keyDown == 'A'){
-          vectorKX = 1.0f;
-          vectorKY = -1.0f;
-        }
-      if(keyDown == 'w' || keyDown == 'W' && keyDown == 'd' || keyDown == 'D'){
-          vectorKX = -1.0f;
-          vectorKY = -1.0f;
-        }
-      if(keyDown == 's' || keyDown == 'S' && keyDown == 'a' || keyDown == 'A'){
-          vectorKX = 1.0f;
-          vectorKY =  1.0f;
-        }
-      if(keyDown == 's' || keyDown == 'S' && keyDown == 'd' || keyDown == 'D'){
-          vectorKX = -1.0f;
-          vectorKY = 1.0f;
-        }
+
 
     position[POSITIONX] += vectorKX*speed;
     position[POSITIONY] += vectorKY*speed;
