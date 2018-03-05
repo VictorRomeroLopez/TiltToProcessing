@@ -1,11 +1,13 @@
 final int POSITIONX = 0;
 final int POSITIONY = 1;
-final int NUM_ENEMIES = 1;
+final int NUM_ENEMIES = 10;
 final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
 final int TEXTSIZEAA1 = 200;
 final int TEXTSIZEEXIT = 32;
 final int PLAYER_SPAWN_AREA = 25;
+final float ELIPSE_SIZE_PARTICLES = 15.0f;
+final int NUMPARTICLES = 500;
 int enemyGenerationSpeed = 15;
 boolean colisionObstacle;
 //variables de control del joc i dels menus
@@ -31,8 +33,11 @@ int coloringMice;
 
 int i = 0;
 int j = 0;
+int l = 0;
+int m = 0;
 float mousePointer[] = {0,0};
 Enemy enemies[] = new Enemy[NUM_ENEMIES];
+Particle particles[] = new Particle[NUMPARTICLES];
 Obstacle obstacles[] = new Obstacle[NUM_OBSTACLES];
 Player player;
 Exit exit;
@@ -74,6 +79,9 @@ void setup()
       i = 0;
     }
   }
+  for(int i = 0; i<NUMPARTICLES; i++){
+    particles[i] = new Particle();
+  }
 }
 
 //Zona de draw
@@ -112,8 +120,6 @@ void draw(){
       player.position[POSITIONY] = 0;
     }
   }
-  if(player.colision(exit.position,exit.getRadius()))
-    gameEnd = true;
     dead = false;
   for(int i = 0; i < obstacles.length && !colisionObstacle ; i++){
     if(player.colision(obstacles[i].position, obstacles[i].getRadius())){
@@ -149,6 +155,8 @@ void draw(){
   }
   if (j >= enemies.length){
     exit.printExit();
+    if(player.colision(exit.position,exit.getRadius()))
+      gameEnd = true;
   }
   //aparició dels enemics a l'escenari i el persegueixen
   for( int k = 0; k<j; k++){
@@ -198,6 +206,24 @@ void draw(){
     fill(0);
     textSize(TEXTSIZEAA1);
     text("YOU WON", titleXY[POSITIONX]-TEXTSIZEAA1*2.5, titleXY[POSITIONY]);
+    if(l < particles.length){
+      if(frameCount % 5 == 0){
+        particles[m] = new Particle();
+        l++;
+        m++;
+      }
+    }
+    for( int k = 0; k < m; k++){
+      particles[k].velocity.x += particles[k].acceleration.x * particles[k].deltaT;
+      particles[k].velocity.y += particles[k].acceleration.y * particles[k].deltaT;
+      particles[k].location.x += particles[k].velocity.x * particles[k].deltaT;
+      particles[k].location.y += particles[k].velocity.y * particles[k].deltaT;
+      fill(random(255), random(255), random(255));
+      ellipse(particles[k].location.x,particles[k].location.y,ELIPSE_SIZE_PARTICLES,ELIPSE_SIZE_PARTICLES);
+      if(particles[k].location.y > height){
+        particles[k] = new Particle();
+      }
+    }
     if (startAgain)
       fill(200);
     else
@@ -219,7 +245,6 @@ void draw(){
     }
   }
 }
-
 
 void generateObstacles(){
   int i = 0;
@@ -270,7 +295,13 @@ void mousePressed(){
   if (startAgain){
     mainMenu = false;
     gameEnd = false;
-
+    i = 0;
+    j = 0;
+    l = 0;
+    m = 0;
+    player.position[POSITIONX] = mouseX;
+    player.position[POSITIONY] = mouseY;
+    generateObstacles();
   }
   if(!player.mouseColision(mousePointer) && !mainMenu)
     player.moveTowards(mousePointer, SPEED*10);
