@@ -1,14 +1,11 @@
 class Exit {
-  final int POSITIONX = 0;
-  final int POSITIONY = 1;
   final int RADIUS = 100;
   boolean succesfullyDone;
-  float position[] = {0,0};
+  PVector position;
   float magnitudeVector;
 
   Exit(){
-    position[POSITIONX] = random(RADIUS, width-RADIUS);
-    position[POSITIONY] = random(RADIUS, height-RADIUS);
+    position = new PVector(random(RADIUS, width-RADIUS), random(RADIUS, height-RADIUS));
   }
 
   public int getRadius(){
@@ -19,8 +16,7 @@ class Exit {
       //NO VAN ELS WHILES, TOT I SER FALSE ENTRA IGUAL
       //CADA COP QUE CANVIA LA X O LA Y HEM DE SETEAR LA I A 0 UN ALTRE COP
       if (colision(obstacles.position, obstacles.getRadius()) || colision(player.position, player.getRadius())){
-        position[POSITIONX] = random(RADIUS, width-RADIUS);
-        position[POSITIONY] = random(RADIUS, height-RADIUS);
+        position = new PVector(random(RADIUS, width-RADIUS), random(RADIUS, height-RADIUS));
         return false;
       }
       return true;
@@ -31,14 +27,14 @@ class Exit {
 
     //generem un triangle equilater
     fill(233,200,0);
-    ellipse(position[POSITIONX],position[POSITIONY],100,100);
+    ellipse(position.x,position.y,100,100);
     fill(0);
     textSize(TEXTSIZEEXIT);
-    text(EXITMESSAGE,position[POSITIONX]-TEXTSIZEEXIT,position[POSITIONY]-50);
+    text(EXITMESSAGE,position.x-TEXTSIZEEXIT,position.y-50);
   }
 
-  public boolean colision(float endPos[], int endRadius){
-      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+  public boolean colision(PVector endPos, int endRadius){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
       return magnitudeVector < (endRadius * 0.5 + RADIUS * 0.5);
   }
 }

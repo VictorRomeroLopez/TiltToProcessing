@@ -14,8 +14,6 @@ import java.io.IOException;
 
 public class TiltToProcessing extends PApplet {
 
-final int POSITIONX = 0;
-final int POSITIONY = 1;
 final int NUM_ENEMIES = 10;
 final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
@@ -51,7 +49,7 @@ int i = 0;
 int j = 0;
 int l = 0;
 int m = 0;
-float mousePointer[] = {0,0};
+PVector mousePointer;
 Enemy enemies[] = new Enemy[NUM_ENEMIES];
 Particle particles[] = new Particle[NUMPARTICLES];
 Obstacle obstacles[] = new Obstacle[NUM_OBSTACLES];
@@ -63,7 +61,8 @@ String EXITMESSAGE = "EXIT";
 final int RADIUS = 100;
 
 //VARIABLES PER LA SELECCIO DE CONTROLS
-float titleXY[] = {0.0f,0.0f};
+PVector titleXY;
+
 //Zona de setup
 public void setup()
 {
@@ -83,8 +82,7 @@ public void setup()
   coloringMice = 0;
   coloringKeyboard = 0;
 
-  titleXY[POSITIONX] = width/2;
-  titleXY[POSITIONY] = height/2;
+  titleXY = new PVector(width/2, height/2);
   exit = new Exit();
   for(int i = 0; i < obstacles.length; i++){
     obstacles[i] = new Obstacle();
@@ -104,8 +102,7 @@ public void setup()
 public void draw(){
   //Background blanc
   background(255);
-  mousePointer[0] = mouseX;
-  mousePointer[1] = mouseY;
+  mousePointer = new PVector(mouseX, mouseY);
   if(mainMenu){
     controlSelection();
     theMainMenu();
@@ -123,17 +120,17 @@ public void draw(){
   //moviment del jugador
   if (keyboard){
     player.movementWithKeyboard(inputKeyUp ,inputKeyDown, inputKeyLeft, inputKeyRight,SPEED);
-    if(player.position[POSITIONX] >= width){
-      player.position[POSITIONX] = width;
+    if(player.position.x >= width){
+      player.position.x = width;
     }
-    if(player.position[POSITIONX] <= 0){
-      player.position[POSITIONX] = 0;
+    if(player.position.x <= 0){
+      player.position.x = 0;
     }
-    if(player.position[POSITIONY] >= height){
-      player.position[POSITIONY] = height;
+    if(player.position.y >= height){
+      player.position.y = height;
     }
-    if(player.position[POSITIONY] <= 0){
-      player.position[POSITIONY] = 0;
+    if(player.position.y <= 0){
+      player.position.y = 0;
     }
   }
     dead = false;
@@ -147,8 +144,8 @@ public void draw(){
   if (!colisionObstacle && !player.mouseColision(mousePointer)){
     player.moveTowards(mousePointer, SPEED);
   }else if(!colisionObstacle){
-    player.position[POSITIONX] = mouseX;
-    player.position[POSITIONY] = mouseY;
+    player.position.x = mouseX;
+    player.position.y = mouseY;
   }
  }
   //generador d'ememics a l'array
@@ -197,31 +194,31 @@ public void draw(){
   else if (!mainMenu && gameEnd && dead){
     fill(0);
     textSize(TEXTSIZEAA1);
-    text("YOU LOST", titleXY[POSITIONX]-TEXTSIZEAA1*2.5f, titleXY[POSITIONY]);
+    text("YOU LOST", titleXY.x-TEXTSIZEAA1*2.5f, titleXY.y);
     if (startAgain)
       fill(200);
     else
       fill(0);
-    ellipse(titleXY[POSITIONX], titleXY[POSITIONY]+ TEXTSIZEAA1*2, RADIUS, RADIUS);
+    ellipse(titleXY.x, titleXY.y+ TEXTSIZEAA1*2, RADIUS, RADIUS);
     textSize(TEXTSIZEEXIT);
-    text("START AGAIN", titleXY[POSITIONX] - TEXTSIZEEXIT*2.5f, titleXY[POSITIONY] + TEXTSIZEAA1+TEXTSIZEAA1/2 );
-    if(mousePointer[POSITIONX] <= titleXY[POSITIONX]+100 && mousePointer[POSITIONX] >= titleXY[POSITIONX]-100){
+    text("START AGAIN", titleXY.x - TEXTSIZEEXIT*2.5f, titleXY.y + TEXTSIZEAA1+TEXTSIZEAA1/2 );
+    if(mousePointer.x <= titleXY.x+100 && mousePointer.x >= titleXY.x-100){
       startAgain = true;
     }
-    if(mousePointer[POSITIONY] <= titleXY[POSITIONY]+ TEXTSIZEAA1*2+100 && mousePointer[POSITIONY] >= titleXY[POSITIONY]+ TEXTSIZEAA1*2-100){
+    if(mousePointer.y <= titleXY.y+ TEXTSIZEAA1*2+100 && mousePointer.y >= titleXY.y+ TEXTSIZEAA1*2-100){
       startAgain = true;
     }
-    if(mousePointer[POSITIONX] > titleXY[POSITIONX]+100 || mousePointer[POSITIONX] < titleXY[POSITIONX]-100){
+    if(mousePointer.x > titleXY.x+100 || mousePointer.x < titleXY.x-100){
       startAgain = false;
     }
-    if(mousePointer[POSITIONY] > titleXY[POSITIONY]+ TEXTSIZEAA1*2+100 || mousePointer[POSITIONY] < titleXY[POSITIONY]+ TEXTSIZEAA1*2-100){
+    if(mousePointer.y > titleXY.y+ TEXTSIZEAA1*2+100 || mousePointer.y < titleXY.y+ TEXTSIZEAA1*2-100){
       startAgain = false;
     }
   }
   else if (!mainMenu && gameEnd && !dead){
     fill(0);
     textSize(TEXTSIZEAA1);
-    text("YOU WON", titleXY[POSITIONX]-TEXTSIZEAA1*2.5f, titleXY[POSITIONY]);
+    text("YOU WON", titleXY.x-TEXTSIZEAA1*2.5f, titleXY.y);
     if(l < particles.length){
       if(frameCount % 5 == 0){
         particles[m] = new Particle();
@@ -244,19 +241,19 @@ public void draw(){
       fill(200);
     else
       fill(0);
-    ellipse(titleXY[POSITIONX], titleXY[POSITIONY]+ TEXTSIZEAA1*2, RADIUS, RADIUS);
+    ellipse(titleXY.x, titleXY.y+ TEXTSIZEAA1*2, RADIUS, RADIUS);
     textSize(TEXTSIZEEXIT);
-    text("START AGAIN", titleXY[POSITIONX] - TEXTSIZEEXIT*2.5f, titleXY[POSITIONY] + TEXTSIZEAA1+TEXTSIZEAA1/2 );
-    if(mousePointer[POSITIONX] <= titleXY[POSITIONX]+100 && mousePointer[POSITIONX] >= titleXY[POSITIONX]-100){
+    text("START AGAIN", titleXY.x - TEXTSIZEEXIT*2.5f, titleXY.y + TEXTSIZEAA1+TEXTSIZEAA1/2 );
+    if(mousePointer.x <= titleXY.x+100 && mousePointer.x >= titleXY.x-100){
       startAgain = true;
     }
-    if(mousePointer[POSITIONY] <= titleXY[POSITIONY]+ TEXTSIZEAA1*2+100 && mousePointer[POSITIONY] >= titleXY[POSITIONY]+ TEXTSIZEAA1*2-100){
+    if(mousePointer.y <= titleXY.y+ TEXTSIZEAA1*2+100 && mousePointer.y >= titleXY.y+ TEXTSIZEAA1*2-100){
       startAgain = true;
     }
-    if(mousePointer[POSITIONX] > titleXY[POSITIONX]+100 || mousePointer[POSITIONX] < titleXY[POSITIONX]-100){
+    if(mousePointer.x > titleXY.x+100 || mousePointer.x < titleXY.x-100){
       startAgain = false;
     }
-    if(mousePointer[POSITIONY] > titleXY[POSITIONY]+ TEXTSIZEAA1*2+100 || mousePointer[POSITIONY] < titleXY[POSITIONY]+ TEXTSIZEAA1*2-100){
+    if(mousePointer.y > titleXY.y+ TEXTSIZEAA1*2+100 || mousePointer.y < titleXY.y+ TEXTSIZEAA1*2-100){
       startAgain = false;
     }
   }
@@ -289,15 +286,15 @@ public void printObstacles(){
 public void theMainMenu(){
   fill(0);
   textSize(TEXTSIZEAA1);
-  text("AA1", titleXY[POSITIONX]-TEXTSIZEAA1, titleXY[POSITIONY]);
+  text("AA1", titleXY.x-TEXTSIZEAA1, titleXY.y);
 
   fill(coloringKeyboard);
-  ellipse(titleXY[POSITIONX]/2,titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
+  ellipse(titleXY.x/2,titleXY.y-TEXTSIZEEXIT,RADIUS,RADIUS);
   textSize(TEXTSIZEEXIT);
-  text("KEYBOARD CONTROL",titleXY[POSITIONX]/2+RADIUS/2-TEXTSIZEEXIT*6,titleXY[POSITIONY]-RADIUS);
+  text("KEYBOARD CONTROL",titleXY.x/2+RADIUS/2-TEXTSIZEEXIT*6,titleXY.y-RADIUS);
   fill(coloringMice);
-  ellipse(titleXY[POSITIONX]/2+titleXY[POSITIONX],titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
-  text("MICE CONTROL",titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS/3-TEXTSIZEEXIT*2,titleXY[POSITIONY]-RADIUS);
+  ellipse(titleXY.x/2+titleXY.x,titleXY.y-TEXTSIZEEXIT,RADIUS,RADIUS);
+  text("MICE CONTROL",titleXY.x/2+titleXY.x-RADIUS/3-TEXTSIZEEXIT*2,titleXY.y-RADIUS);
 }
 public void mousePressed(){
   if (selectionKeyboardX && selectionKeyboardY){
@@ -310,13 +307,14 @@ public void mousePressed(){
   }
   if (startAgain){
     mainMenu = false;
+    startAgain = false;
     gameEnd = false;
     i = 0;
     j = 0;
     l = 0;
     m = 0;
-    player.position[POSITIONX] = mouseX;
-    player.position[POSITIONY] = mouseY;
+    player.position.x = mouseX;
+    player.position.y = mouseY;
     generateObstacles();
   }
   if(!player.mouseColision(mousePointer) && !mainMenu)
@@ -337,29 +335,29 @@ public void controlSelection(){
    coloringMice = 0;
  }
  //seleccio de tecalt
-  if(mousePointer[POSITIONX]<= titleXY[POSITIONX]/2+RADIUS && mousePointer[POSITIONX]>= titleXY[POSITIONX]/2-RADIUS){
+  if(mousePointer.x<= titleXY.x/2+RADIUS && mousePointer.x>= titleXY.x/2-RADIUS){
     selectionKeyboardX = true;
   }
-  if(mousePointer[POSITIONY]<= titleXY[POSITIONY] +RADIUS -TEXTSIZEEXIT&& mousePointer[POSITIONY]>= titleXY[POSITIONY]-RADIUS -TEXTSIZEEXIT){
+  if(mousePointer.y<= titleXY.y +RADIUS -TEXTSIZEEXIT&& mousePointer.y>= titleXY.y-RADIUS -TEXTSIZEEXIT){
     selectionKeyboardY = true;
   }
-  if(mousePointer[POSITIONX]> titleXY[POSITIONX]/2+RADIUS || mousePointer[POSITIONX]< titleXY[POSITIONX]/2-RADIUS){
+  if(mousePointer.x> titleXY.x/2+RADIUS || mousePointer.x< titleXY.x/2-RADIUS){
     selectionKeyboardX = false;
   }
-  if(mousePointer[POSITIONY] > titleXY[POSITIONY] +RADIUS -TEXTSIZEEXIT || mousePointer[POSITIONY]< titleXY[POSITIONY]-RADIUS -TEXTSIZEEXIT){
+  if(mousePointer.y > titleXY.y +RADIUS -TEXTSIZEEXIT || mousePointer.y< titleXY.y-RADIUS -TEXTSIZEEXIT){
     selectionKeyboardY = false;
   }
   //seleccio de ratoli
-  if(mousePointer[POSITIONX]<= titleXY[POSITIONX]/2+titleXY[POSITIONX]+RADIUS && mousePointer[POSITIONX]>= titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS){
+  if(mousePointer.x<= titleXY.x/2+titleXY.x+RADIUS && mousePointer.x>= titleXY.x/2+titleXY.x-RADIUS){
     selectionMiceX = true;
   }
-  if(mousePointer[POSITIONY]<= titleXY[POSITIONY] +RADIUS -TEXTSIZEEXIT&& mousePointer[POSITIONY]>= titleXY[POSITIONY]-RADIUS -TEXTSIZEEXIT){
+  if(mousePointer.y<= titleXY.y +RADIUS -TEXTSIZEEXIT&& mousePointer.y>= titleXY.y-RADIUS -TEXTSIZEEXIT){
     selectionMiceY = true;
   }
-  if(mousePointer[POSITIONX]> titleXY[POSITIONX]/2+titleXY[POSITIONX]+RADIUS || mousePointer[POSITIONX]< titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS){
+  if(mousePointer.x> titleXY.x/2+titleXY.x+RADIUS || mousePointer.x< titleXY.x/2+titleXY.x-RADIUS){
     selectionMiceX = false;
   }
-  if(mousePointer[POSITIONY] > titleXY[POSITIONY] +RADIUS -TEXTSIZEEXIT || mousePointer[POSITIONY]< titleXY[POSITIONY]-RADIUS -TEXTSIZEEXIT){
+  if(mousePointer.y > titleXY.y +RADIUS -TEXTSIZEEXIT || mousePointer.y< titleXY.y-RADIUS -TEXTSIZEEXIT){
     selectionMiceY = false;
   }
 }
@@ -385,33 +383,28 @@ public void keyReleased(){
 }
 class Enemy extends MovingObject{
   Enemy(){
-    position[POSITIONX] = ceil(random(0,width));
-    position[POSITIONY] = ceil(random(0,height));
+    position = new PVector(ceil(random(0,width)), ceil(random(0,height)));
     speed = ceil(random(SPEED/2,SPEED-2));
   }
 
   public void randomize(){
-    position[POSITIONX] = ceil(random(0,width));
-    position[POSITIONY] = ceil(random(0,height));
+    position = new PVector(ceil(random(0,width)), ceil(random(0,height)));
   }
 
   public void pop(){
     fill(255,0,0);
     strokeWeight(0);
-    ellipse(position[POSITIONX], position[POSITIONY], radius, radius);
+    ellipse(position.x, position.y, radius, radius);
   }
 }
 class Exit {
-  final int POSITIONX = 0;
-  final int POSITIONY = 1;
   final int RADIUS = 100;
   boolean succesfullyDone;
-  float position[] = {0,0};
+  PVector position;
   float magnitudeVector;
 
   Exit(){
-    position[POSITIONX] = random(RADIUS, width-RADIUS);
-    position[POSITIONY] = random(RADIUS, height-RADIUS);
+    position = new PVector(random(RADIUS, width-RADIUS), random(RADIUS, height-RADIUS));
   }
 
   public int getRadius(){
@@ -422,8 +415,7 @@ class Exit {
       //NO VAN ELS WHILES, TOT I SER FALSE ENTRA IGUAL
       //CADA COP QUE CANVIA LA X O LA Y HEM DE SETEAR LA I A 0 UN ALTRE COP
       if (colision(obstacles.position, obstacles.getRadius()) || colision(player.position, player.getRadius())){
-        position[POSITIONX] = random(RADIUS, width-RADIUS);
-        position[POSITIONY] = random(RADIUS, height-RADIUS);
+        position = new PVector(random(RADIUS, width-RADIUS), random(RADIUS, height-RADIUS));
         return false;
       }
       return true;
@@ -434,37 +426,32 @@ class Exit {
 
     //generem un triangle equilater
     fill(233,200,0);
-    ellipse(position[POSITIONX],position[POSITIONY],100,100);
+    ellipse(position.x,position.y,100,100);
     fill(0);
     textSize(TEXTSIZEEXIT);
-    text(EXITMESSAGE,position[POSITIONX]-TEXTSIZEEXIT,position[POSITIONY]-50);
+    text(EXITMESSAGE,position.x-TEXTSIZEEXIT,position.y-50);
   }
 
-  public boolean colision(float endPos[], int endRadius){
-      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+  public boolean colision(PVector endPos, int endRadius){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
       return magnitudeVector < (endRadius * 0.5f + RADIUS * 0.5f);
   }
 }
 class MovingObject{
-  final int POSITIONX = 0;
-  final int POSITIONY = 1;
-  float position[] = { 0, 0 };
+  PVector position;
   int radius = 20;
   public float magnitudeVector;
   int speed;
 
-
   public int getRadius(){
     return radius;
   }
-  
-  public void moveTowards(float endPos[], int speed){
-    float vectorX;
-    float vectorY;
-    vectorX = endPos[POSITIONX] - position[POSITIONX];
-    vectorY = endPos[POSITIONY] - position[POSITIONY];
-    position[POSITIONX] += (vectorX/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
-    position[POSITIONY] += (vectorY/sqrt(pow(vectorX,2)+pow(vectorY,2)))*speed;
+
+  public void moveTowards(PVector endPos, int speed){
+    PVector vector = new PVector(0,0);
+    vector = new PVector(endPos.x - position.x, endPos.y - position.y);
+    position.x += (vector.x/sqrt(pow(vector.x,2)+pow(vector.y,2)))*speed;
+    position.y += (vector.y/sqrt(pow(vector.x,2)+pow(vector.y,2)))*speed;
   }
 
   public void movementWithKeyboard(boolean keyInputUp,boolean keyInputDown,boolean keyInputLeft,boolean keyInputRigth, int speed){
@@ -504,59 +491,54 @@ class MovingObject{
       }
 
 
-    position[POSITIONX] += vectorKX*speed;
-    position[POSITIONY] += vectorKY*speed;
+    position.x += vectorKX*speed;
+    position.y += vectorKY*speed;
   }
 
-  public boolean colision(float endPos[], int endRadius){
-      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+  public boolean colision(PVector endPos, int endRadius){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
       return magnitudeVector < (endRadius * 0.5f + radius * 0.5f);
   }
 
-  public void colisionMovement(float colisionPos[], int radiusObstacle, int speed){
-    PVector v = new PVector(position[POSITIONX] - colisionPos[POSITIONX], position[POSITIONY] - colisionPos[POSITIONY]);
+  public void colisionMovement(PVector colisionPos, int radiusObstacle, int speed){
+    PVector v = new PVector(position.x - colisionPos.x, position.y - colisionPos.y);
     v.setMag(radiusObstacle/2 + radius/2 + 1);
-    position[POSITIONX] = v.x + colisionPos[POSITIONX];
-    position[POSITIONY] = v.y + colisionPos[POSITIONY];
+    position.x = v.x + colisionPos.x;
+    position.y = v.y + colisionPos.y;
   }
 }
 class Obstacle{
-  final int POSITIONX = 0;
-  final int POSITIONY = 1;
   final int RADIUS = 100;
   final int MIN = 1;
   final int MAXX = ceil(width/RADIUS)-1;
   final int MAXY = ceil(height/RADIUS)-1;
-  float position[] = {0.0f,0.0f};
+  PVector position;
   public float magnitudeVector;
 
   Obstacle(){
-    position[POSITIONX] = random(MIN,MAXX)*RADIUS;
-    position[POSITIONY] = random(MIN,MAXY)*RADIUS;
+    position = new PVector(random(MIN,MAXX) * RADIUS, random(MIN,MAXY) * RADIUS);
   }
 
-  public float getPosition(int i){
-    float j = 0.0f;
-    if(i == 0 || i == 1)
-       j = position[i];
-    return j;
+  public PVector getPosition(){
+    return position;
   }
+
   public int getRadius(){
       return RADIUS;
   }
 
   public void randomizePosition(){
-    position[POSITIONX] = (random(MIN,MAXX))*RADIUS;
-    position[POSITIONY] = (random(MIN,MAXY))*RADIUS;
+    position.x = (random(MIN,MAXX))*RADIUS;
+    position.y = (random(MIN,MAXY))*RADIUS;
   }
 
   public void printObstacle(){
     strokeWeight(0);
-    ellipse(position[POSITIONX], position[POSITIONY], RADIUS, RADIUS );
+    ellipse(position.x, position.y, RADIUS, RADIUS );
   }
 
-  public boolean colision(float endPos[], int endRadius){
-      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+  public boolean colision(PVector endPos, int endRadius){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
       return magnitudeVector < (endRadius * 0.5f + RADIUS * 0.5f);
   }
 }
@@ -583,18 +565,17 @@ class Particle{
 }
 class Player extends MovingObject{
   Player(){
-    position[POSITIONX] = width/2;
-    position[POSITIONY] = height/2;
+    position = new PVector(width/2, height/2);
   }
 
   public void pop(){
     fill(0,255,0);
     strokeWeight(0);
-    ellipse(position[POSITIONX], position[POSITIONY], radius, radius);
+    ellipse(position.x, position.y, radius, radius);
   }
 
-  public boolean mouseColision(float endPos[]){
-      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+  public boolean mouseColision(PVector endPos){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
       return magnitudeVector < (radius/2);
   }
 }

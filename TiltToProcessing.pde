@@ -1,5 +1,3 @@
-final int POSITIONX = 0;
-final int POSITIONY = 1;
 final int NUM_ENEMIES = 10;
 final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
@@ -35,11 +33,13 @@ int i = 0;
 int j = 0;
 int l = 0;
 int m = 0;
-float mousePointer[] = {0,0};
+
+PVector mousePointer;
 Enemy enemies[] = new Enemy[NUM_ENEMIES];
 Particle particles[] = new Particle[NUMPARTICLES];
 Obstacle obstacles[] = new Obstacle[NUM_OBSTACLES];
 Player player;
+
 Exit exit;
 //variables per la creació de la sortida
 String EXITMESSAGE = "EXIT";
@@ -47,7 +47,8 @@ String EXITMESSAGE = "EXIT";
 final int RADIUS = 100;
 
 //VARIABLES PER LA SELECCIO DE CONTROLS
-float titleXY[] = {0.0f,0.0f};
+PVector titleXY;
+
 //Zona de setup
 void setup()
 {
@@ -67,8 +68,7 @@ void setup()
   coloringMice = 0;
   coloringKeyboard = 0;
 
-  titleXY[POSITIONX] = width/2;
-  titleXY[POSITIONY] = height/2;
+  titleXY = new PVector(width/2, height/2);
   exit = new Exit();
   for(int i = 0; i < obstacles.length; i++){
     obstacles[i] = new Obstacle();
@@ -88,8 +88,7 @@ void setup()
 void draw(){
   //Background blanc
   background(255);
-  mousePointer[0] = mouseX;
-  mousePointer[1] = mouseY;
+  mousePointer = new PVector(mouseX, mouseY);
   if(mainMenu){
     controlSelection();
     theMainMenu();
@@ -107,17 +106,17 @@ void draw(){
   //moviment del jugador
   if (keyboard){
     player.movementWithKeyboard(inputKeyUp ,inputKeyDown, inputKeyLeft, inputKeyRight,SPEED);
-    if(player.position[POSITIONX] >= width){
-      player.position[POSITIONX] = width;
+    if(player.position.x >= width){
+      player.position.x = width;
     }
-    if(player.position[POSITIONX] <= 0){
-      player.position[POSITIONX] = 0;
+    if(player.position.x <= 0){
+      player.position.x = 0;
     }
-    if(player.position[POSITIONY] >= height){
-      player.position[POSITIONY] = height;
+    if(player.position.y >= height){
+      player.position.y = height;
     }
-    if(player.position[POSITIONY] <= 0){
-      player.position[POSITIONY] = 0;
+    if(player.position.y <= 0){
+      player.position.y = 0;
     }
   }
     dead = false;
@@ -131,8 +130,8 @@ void draw(){
   if (!colisionObstacle && !player.mouseColision(mousePointer)){
     player.moveTowards(mousePointer, SPEED);
   }else if(!colisionObstacle){
-    player.position[POSITIONX] = mouseX;
-    player.position[POSITIONY] = mouseY;
+    player.position.x = mouseX;
+    player.position.y = mouseY;
   }
  }
   //generador d'ememics a l'array
@@ -181,31 +180,31 @@ void draw(){
   else if (!mainMenu && gameEnd && dead){
     fill(0);
     textSize(TEXTSIZEAA1);
-    text("YOU LOST", titleXY[POSITIONX]-TEXTSIZEAA1*2.5, titleXY[POSITIONY]);
+    text("YOU LOST", titleXY.x-TEXTSIZEAA1*2.5, titleXY.y);
     if (startAgain)
       fill(200);
     else
       fill(0);
-    ellipse(titleXY[POSITIONX], titleXY[POSITIONY]+ TEXTSIZEAA1*2, RADIUS, RADIUS);
+    ellipse(titleXY.x, titleXY.y+ TEXTSIZEAA1*2, RADIUS, RADIUS);
     textSize(TEXTSIZEEXIT);
-    text("START AGAIN", titleXY[POSITIONX] - TEXTSIZEEXIT*2.5, titleXY[POSITIONY] + TEXTSIZEAA1+TEXTSIZEAA1/2 );
-    if(mousePointer[POSITIONX] <= titleXY[POSITIONX]+100 && mousePointer[POSITIONX] >= titleXY[POSITIONX]-100){
+    text("START AGAIN", titleXY.x - TEXTSIZEEXIT*2.5, titleXY.y + TEXTSIZEAA1+TEXTSIZEAA1/2 );
+    if(mousePointer.x <= titleXY.x+100 && mousePointer.x >= titleXY.x-100){
       startAgain = true;
     }
-    if(mousePointer[POSITIONY] <= titleXY[POSITIONY]+ TEXTSIZEAA1*2+100 && mousePointer[POSITIONY] >= titleXY[POSITIONY]+ TEXTSIZEAA1*2-100){
+    if(mousePointer.y <= titleXY.y+ TEXTSIZEAA1*2+100 && mousePointer.y >= titleXY.y+ TEXTSIZEAA1*2-100){
       startAgain = true;
     }
-    if(mousePointer[POSITIONX] > titleXY[POSITIONX]+100 || mousePointer[POSITIONX] < titleXY[POSITIONX]-100){
+    if(mousePointer.x > titleXY.x+100 || mousePointer.x < titleXY.x-100){
       startAgain = false;
     }
-    if(mousePointer[POSITIONY] > titleXY[POSITIONY]+ TEXTSIZEAA1*2+100 || mousePointer[POSITIONY] < titleXY[POSITIONY]+ TEXTSIZEAA1*2-100){
+    if(mousePointer.y > titleXY.y+ TEXTSIZEAA1*2+100 || mousePointer.y < titleXY.y+ TEXTSIZEAA1*2-100){
       startAgain = false;
     }
   }
   else if (!mainMenu && gameEnd && !dead){
     fill(0);
     textSize(TEXTSIZEAA1);
-    text("YOU WON", titleXY[POSITIONX]-TEXTSIZEAA1*2.5, titleXY[POSITIONY]);
+    text("YOU WON", titleXY.x-TEXTSIZEAA1*2.5, titleXY.y);
     if(l < particles.length){
       if(frameCount % 5 == 0){
         particles[m] = new Particle();
@@ -228,19 +227,19 @@ void draw(){
       fill(200);
     else
       fill(0);
-    ellipse(titleXY[POSITIONX], titleXY[POSITIONY]+ TEXTSIZEAA1*2, RADIUS, RADIUS);
+    ellipse(titleXY.x, titleXY.y+ TEXTSIZEAA1*2, RADIUS, RADIUS);
     textSize(TEXTSIZEEXIT);
-    text("START AGAIN", titleXY[POSITIONX] - TEXTSIZEEXIT*2.5, titleXY[POSITIONY] + TEXTSIZEAA1+TEXTSIZEAA1/2 );
-    if(mousePointer[POSITIONX] <= titleXY[POSITIONX]+100 && mousePointer[POSITIONX] >= titleXY[POSITIONX]-100){
+    text("START AGAIN", titleXY.x - TEXTSIZEEXIT*2.5, titleXY.y + TEXTSIZEAA1+TEXTSIZEAA1/2 );
+    if(mousePointer.x <= titleXY.x+100 && mousePointer.x >= titleXY.x-100){
       startAgain = true;
     }
-    if(mousePointer[POSITIONY] <= titleXY[POSITIONY]+ TEXTSIZEAA1*2+100 && mousePointer[POSITIONY] >= titleXY[POSITIONY]+ TEXTSIZEAA1*2-100){
+    if(mousePointer.y <= titleXY.y+ TEXTSIZEAA1*2+100 && mousePointer.y >= titleXY.y+ TEXTSIZEAA1*2-100){
       startAgain = true;
     }
-    if(mousePointer[POSITIONX] > titleXY[POSITIONX]+100 || mousePointer[POSITIONX] < titleXY[POSITIONX]-100){
+    if(mousePointer.x > titleXY.x+100 || mousePointer.x < titleXY.x-100){
       startAgain = false;
     }
-    if(mousePointer[POSITIONY] > titleXY[POSITIONY]+ TEXTSIZEAA1*2+100 || mousePointer[POSITIONY] < titleXY[POSITIONY]+ TEXTSIZEAA1*2-100){
+    if(mousePointer.y > titleXY.y+ TEXTSIZEAA1*2+100 || mousePointer.y < titleXY.y+ TEXTSIZEAA1*2-100){
       startAgain = false;
     }
   }
@@ -273,15 +272,15 @@ void printObstacles(){
 void theMainMenu(){
   fill(0);
   textSize(TEXTSIZEAA1);
-  text("AA1", titleXY[POSITIONX]-TEXTSIZEAA1, titleXY[POSITIONY]);
+  text("AA1", titleXY.x-TEXTSIZEAA1, titleXY.y);
 
   fill(coloringKeyboard);
-  ellipse(titleXY[POSITIONX]/2,titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
+  ellipse(titleXY.x/2,titleXY.y-TEXTSIZEEXIT,RADIUS,RADIUS);
   textSize(TEXTSIZEEXIT);
-  text("KEYBOARD CONTROL",titleXY[POSITIONX]/2+RADIUS/2-TEXTSIZEEXIT*6,titleXY[POSITIONY]-RADIUS);
+  text("KEYBOARD CONTROL",titleXY.x/2+RADIUS/2-TEXTSIZEEXIT*6,titleXY.y-RADIUS);
   fill(coloringMice);
-  ellipse(titleXY[POSITIONX]/2+titleXY[POSITIONX],titleXY[POSITIONY]-TEXTSIZEEXIT,RADIUS,RADIUS);
-  text("MICE CONTROL",titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS/3-TEXTSIZEEXIT*2,titleXY[POSITIONY]-RADIUS);
+  ellipse(titleXY.x/2+titleXY.x,titleXY.y-TEXTSIZEEXIT,RADIUS,RADIUS);
+  text("MICE CONTROL",titleXY.x/2+titleXY.x-RADIUS/3-TEXTSIZEEXIT*2,titleXY.y-RADIUS);
 }
 void mousePressed(){
   if (selectionKeyboardX && selectionKeyboardY){
@@ -294,13 +293,14 @@ void mousePressed(){
   }
   if (startAgain){
     mainMenu = false;
+    startAgain = false;
     gameEnd = false;
     i = 0;
     j = 0;
     l = 0;
     m = 0;
-    player.position[POSITIONX] = mouseX;
-    player.position[POSITIONY] = mouseY;
+    player.position.x = mouseX;
+    player.position.y = mouseY;
     generateObstacles();
   }
   if(!player.mouseColision(mousePointer) && !mainMenu)
@@ -321,29 +321,29 @@ void controlSelection(){
    coloringMice = 0;
  }
  //seleccio de tecalt
-  if(mousePointer[POSITIONX]<= titleXY[POSITIONX]/2+RADIUS && mousePointer[POSITIONX]>= titleXY[POSITIONX]/2-RADIUS){
+  if(mousePointer.x<= titleXY.x/2+RADIUS && mousePointer.x>= titleXY.x/2-RADIUS){
     selectionKeyboardX = true;
   }
-  if(mousePointer[POSITIONY]<= titleXY[POSITIONY] +RADIUS -TEXTSIZEEXIT&& mousePointer[POSITIONY]>= titleXY[POSITIONY]-RADIUS -TEXTSIZEEXIT){
+  if(mousePointer.y<= titleXY.y +RADIUS -TEXTSIZEEXIT&& mousePointer.y>= titleXY.y-RADIUS -TEXTSIZEEXIT){
     selectionKeyboardY = true;
   }
-  if(mousePointer[POSITIONX]> titleXY[POSITIONX]/2+RADIUS || mousePointer[POSITIONX]< titleXY[POSITIONX]/2-RADIUS){
+  if(mousePointer.x> titleXY.x/2+RADIUS || mousePointer.x< titleXY.x/2-RADIUS){
     selectionKeyboardX = false;
   }
-  if(mousePointer[POSITIONY] > titleXY[POSITIONY] +RADIUS -TEXTSIZEEXIT || mousePointer[POSITIONY]< titleXY[POSITIONY]-RADIUS -TEXTSIZEEXIT){
+  if(mousePointer.y > titleXY.y +RADIUS -TEXTSIZEEXIT || mousePointer.y< titleXY.y-RADIUS -TEXTSIZEEXIT){
     selectionKeyboardY = false;
   }
   //seleccio de ratoli
-  if(mousePointer[POSITIONX]<= titleXY[POSITIONX]/2+titleXY[POSITIONX]+RADIUS && mousePointer[POSITIONX]>= titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS){
+  if(mousePointer.x<= titleXY.x/2+titleXY.x+RADIUS && mousePointer.x>= titleXY.x/2+titleXY.x-RADIUS){
     selectionMiceX = true;
   }
-  if(mousePointer[POSITIONY]<= titleXY[POSITIONY] +RADIUS -TEXTSIZEEXIT&& mousePointer[POSITIONY]>= titleXY[POSITIONY]-RADIUS -TEXTSIZEEXIT){
+  if(mousePointer.y<= titleXY.y +RADIUS -TEXTSIZEEXIT&& mousePointer.y>= titleXY.y-RADIUS -TEXTSIZEEXIT){
     selectionMiceY = true;
   }
-  if(mousePointer[POSITIONX]> titleXY[POSITIONX]/2+titleXY[POSITIONX]+RADIUS || mousePointer[POSITIONX]< titleXY[POSITIONX]/2+titleXY[POSITIONX]-RADIUS){
+  if(mousePointer.x> titleXY.x/2+titleXY.x+RADIUS || mousePointer.x< titleXY.x/2+titleXY.x-RADIUS){
     selectionMiceX = false;
   }
-  if(mousePointer[POSITIONY] > titleXY[POSITIONY] +RADIUS -TEXTSIZEEXIT || mousePointer[POSITIONY]< titleXY[POSITIONY]-RADIUS -TEXTSIZEEXIT){
+  if(mousePointer.y > titleXY.y +RADIUS -TEXTSIZEEXIT || mousePointer.y< titleXY.y-RADIUS -TEXTSIZEEXIT){
     selectionMiceY = false;
   }
 }
