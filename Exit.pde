@@ -7,8 +7,8 @@ class Exit {
   float magnitudeVector;
 
   Exit(){
-    position[POSITIONX] = random(RADIUS, width-RADIUS);
-    position[POSITIONY] = random(RADIUS, height-RADIUS);
+    position[POSITIONX] = random(300, width-300);
+    position[POSITIONY] = random(300, height-300);
   }
 
   public int getRadius(){

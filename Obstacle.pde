@@ -2,9 +2,9 @@ class Obstacle{
   final int POSITIONX = 0;
   final int POSITIONY = 1;
   final int RADIUS = 100;
-  final int MIN = 1;
-  final int MAXX = ceil(width/RADIUS)-1;
-  final int MAXY = ceil(height/RADIUS)-1;
+  final int MIN = 3;
+  final int MAXX = ceil((width-300)/RADIUS)-1;
+  final int MAXY = ceil((height-300)/RADIUS)-1;
   float position[] = {0.0f,0.0f};
   public float magnitudeVector;
 
@@ -37,4 +37,11 @@ class Obstacle{
       magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
       return magnitudeVector < (endRadius * 0.5 + RADIUS * 0.5);
   }
+
+  public boolean colisionGenerator(float endPos[], float startPos[], int endRadius){
+
+      return (startPos[POSITIONX] < endPos[POSITIONX] + endRadius || startPos[POSITIONX] > endPos[POSITIONX] - endRadius) &&
+             (startPos[POSITIONY] > endPos[POSITIONY] + endRadius || startPos[POSITIONY] < endPos[POSITIONY] - endRadius);
+  }
+
 }

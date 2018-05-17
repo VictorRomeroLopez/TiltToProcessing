@@ -10,7 +10,7 @@ class MovingObject{
   public int getRadius(){
     return radius;
   }
-  
+
   public void moveTowards(float endPos[], int speed){
     float vectorX;
     float vectorY;
@@ -71,5 +71,12 @@ class MovingObject{
     v.setMag(radiusObstacle/2 + radius/2 + 1);
     position[POSITIONX] = v.x + colisionPos[POSITIONX];
     position[POSITIONY] = v.y + colisionPos[POSITIONY];
+  }
+
+  public PVector vectorProjection(PVector projector, PVector projected){
+    PVector projection = projected;
+    projection.x = (projector.x*projected.x)+(projector.y*projected.y)/(sqrt(pow(projector.x,2)+pow(projector.y,2))) * projector.x;
+    projection.y = (projector.x*projected.x)+(projector.y*projected.y)/(sqrt(pow(projector.x,2)+pow(projector.y,2))) * projector.y;
+    return projection;
   }
 }

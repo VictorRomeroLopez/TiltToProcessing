@@ -1,8 +1,10 @@
+//Zona de variables
 final int POSITIONX = 0;
 final int POSITIONY = 1;
-final int NUM_ENEMIES = 10;
-final int NUM_OBSTACLES = 10;
-final int SPEED = 10;
+int NUM_ENEMIES = 10;
+int NUM_OBSTACLES = 10;
+int SPEED = 10;
+final int ENEMIES_SPEED = 10;
 final int TEXTSIZEAA1 = 200;
 final int TEXTSIZEEXIT = 32;
 final int PLAYER_SPAWN_AREA = 25;
@@ -23,6 +25,7 @@ boolean inputKeyUp;
 boolean inputKeyDown;
 boolean inputKeyRight;
 boolean inputKeyLeft;
+boolean inputKeySpacebar;
 
 boolean selectionKeyboardX;
 boolean selectionKeyboardY;
@@ -30,6 +33,12 @@ boolean selectionMiceX;
 boolean selectionMiceY;
 int coloringKeyboard;
 int coloringMice;
+//variables relacionades amb el board i l'speed-up
+int fieldWidth;
+int fieldHeight;
+float speedUp;
+float colorSpeedUp;
+boolean speeding = false;
 
 int i = 0;
 int j = 0;
@@ -69,6 +78,12 @@ void setup()
 
   titleXY[POSITIONX] = width/2;
   titleXY[POSITIONY] = height/2;
+
+  fieldWidth = width-200;
+  fieldHeight = height -200;
+  speedUp = 500;
+  colorSpeedUp = 0;
+
   exit = new Exit();
   for(int i = 0; i < obstacles.length; i++){
     obstacles[i] = new Obstacle();
@@ -90,12 +105,25 @@ void draw(){
   background(255);
   mousePointer[0] = mouseX;
   mousePointer[1] = mouseY;
+
   if(mainMenu){
     controlSelection();
     theMainMenu();
 
   }
   else if (!mainMenu && !gameEnd){
+  //printeigem el board
+  background (200);
+  fill (100);
+  rect(100 , 100,  fieldWidth , fieldHeight);
+  //fem print de la barra d'speed up i fem canviar el color segons que tant fuel ens queda
+  fill(colorSpeedUp,0,0);
+  rect(width/2 -250, height -75,speedUp,25);
+  if(!speeding && speedUp <= 500){ speedUp += 2.5; SPEED = 10;}
+  else if(speeding && speedUp > 0){ speedUp -= 5; SPEED= 15;}
+  if(speedUp <= 0){ speeding = false; }
+  if(!speeding && colorSpeedUp >0) { colorSpeedUp -=1 ;}
+  else if(speeding && colorSpeedUp < 250) { colorSpeedUp +=2.5 ;}
   //Obtenim la possició del mouse
   //Set de la variable a false
   colisionObstacle = false;
@@ -176,6 +204,13 @@ void draw(){
       gameEnd = true;
       dead = true;
     }
+    //si apretem l'espai disparem
+    if(inputKeySpacebar){
+      bullet = new Bullet(playerPosition, enemies);
+    }
+    bullet.pop();
+    bullet.moveTowards(bullet.target.position);
+
   }
   }
   else if (!mainMenu && gameEnd && dead){
@@ -254,9 +289,10 @@ void generateObstacles(){
   while( i < obstacles.length){
     counter = i;
     obstacles[i].randomizePosition();
-    while(counter != 0){
-      // if(obstacles[i].getPosition(POSITIONX) <= (obstacles[counter-1].getPosition(POSITIONX))+RADIUS*2 && (obstacles[i].getPosition(POSITIONX) >= (obstacles[counter-1].getPosition(POSITIONX))-RADIUS*2) && obstacles[i].getPosition(POSITIONY) <= (obstacles[counter-1].getPosition(POSITIONY))+RADIUS*2 && (obstacles[i].getPosition(POSITIONY) >= (obstacles[counter-1].getPosition(POSITIONY))-RADIUS*2)){
-      if(obstacles[i].colision(obstacles[counter-1].position, 100)){
+    while(counter != 0)
+    {
+      if(obstacles[i].colision(obstacles[counter-1].position, 150))
+      {
          obstacles[i].randomizePosition();
          counter = i;
       }
@@ -270,6 +306,7 @@ void printObstacles(){
     obstacles[i].printObstacle();
   }
 }
+
 void theMainMenu(){
   fill(0);
   textSize(TEXTSIZEAA1);
@@ -293,6 +330,8 @@ void mousePressed(){
     mainMenu = false;
   }
   if (startAgain){
+    colorSpeedUp = 0;
+    speedUp = 500;
     mainMenu = false;
     gameEnd = false;
     i = 0;
@@ -302,10 +341,18 @@ void mousePressed(){
     player.position[POSITIONX] = mouseX;
     player.position[POSITIONY] = mouseY;
     generateObstacles();
+    startAgain = false;
   }
-  if(!player.mouseColision(mousePointer) && !mainMenu)
-    player.moveTowards(mousePointer, SPEED*10);
+  //mentre mantenim pres el ratoli llavors aplicarem l'efecte d'speeding
+  if(speedUp > 0 && !mainMenu){ speeding = true; }
+  else { speeding = false; }
 }
+
+void mouseReleased(){
+  //al deixar de premer el ratoli deixem d'speedeigar
+  speeding = false;
+}
+
 void controlSelection(){
  if (selectionKeyboardX && selectionKeyboardY){
    coloringKeyboard = 200;
@@ -356,6 +403,8 @@ void keyPressed(){
     inputKeyLeft = true;
   else if (key == 'd' || key == 'D' && !inputKeyRight)
     inputKeyRight = true;
+  else if (key == ' '  && !inputKeySpacebar)
+    inputKeySpacebar = true;
 }
 void keyReleased(){
   if (key == 'w' || key == 'W' && inputKeyUp)
@@ -366,4 +415,6 @@ void keyReleased(){
     inputKeyLeft =  false;
   else if (key == 'd' || key == 'D' && inputKeyRight)
     inputKeyRight = false;
+  else if (key == ' '  && !inputKeySpacebar)
+    inputKeySpacebar = false;
 }
