@@ -1,16 +1,22 @@
-<<<<<<< HEAD
-//Zona de variables
-final int POSITIONX = 0;
-final int POSITIONY = 1;
-int NUM_ENEMIES = 10;
-int NUM_OBSTACLES = 10;
-int SPEED = 10;
-final int ENEMIES_SPEED = 10;
-=======
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class TiltToProcessing extends PApplet {
+
 final int NUM_ENEMIES = 10;
 final int NUM_OBSTACLES = 10;
 final int SPEED = 10;
->>>>>>> master
 final int TEXTSIZEAA1 = 200;
 final int TEXTSIZEEXIT = 32;
 final int PLAYER_SPAWN_AREA = 25;
@@ -31,7 +37,6 @@ boolean inputKeyUp;
 boolean inputKeyDown;
 boolean inputKeyRight;
 boolean inputKeyLeft;
-boolean inputKeySpacebar;
 
 boolean selectionKeyboardX;
 boolean selectionKeyboardY;
@@ -39,26 +44,18 @@ boolean selectionMiceX;
 boolean selectionMiceY;
 int coloringKeyboard;
 int coloringMice;
-//variables relacionades amb el board i l'speed-up
-int fieldWidth;
-int fieldHeight;
-float speedUp;
-float colorSpeedUp;
-boolean speeding = false;
 
 int i = 0;
 int j = 0;
 int l = 0;
 int m = 0;
-
 PVector mousePointer;
 Enemy enemies[] = new Enemy[NUM_ENEMIES];
 Particle particles[] = new Particle[NUMPARTICLES];
 Obstacle obstacles[] = new Obstacle[NUM_OBSTACLES];
 Player player;
-
 Exit exit;
-//variables per la creació de la sortida
+//variables per la creaci\u00f3 de la sortida
 String EXITMESSAGE = "EXIT";
 
 final int RADIUS = 100;
@@ -67,15 +64,15 @@ final int RADIUS = 100;
 PVector titleXY;
 
 //Zona de setup
-void setup()
+public void setup()
 {
   //Pantalla complerta
-  fullScreen();
+  
   mainMenu = true;
   gameEnd = false;
   keyboard = false;
   player = new Player();
-  //generació del primer punt del triangle que serà la sortida
+  //generaci\u00f3 del primer punt del triangle que ser\u00e0 la sortida
   inputKeyUp = false;
   inputKeyDown = false;
   dead = false;
@@ -85,18 +82,7 @@ void setup()
   coloringMice = 0;
   coloringKeyboard = 0;
 
-<<<<<<< HEAD
-  titleXY[POSITIONX] = width/2;
-  titleXY[POSITIONY] = height/2;
-
-  fieldWidth = width-200;
-  fieldHeight = height -200;
-  speedUp = 500;
-  colorSpeedUp = 0;
-
-=======
   titleXY = new PVector(width/2, height/2);
->>>>>>> master
   exit = new Exit();
   for(int i = 0; i < obstacles.length; i++){
     obstacles[i] = new Obstacle();
@@ -113,35 +99,17 @@ void setup()
 }
 
 //Zona de draw
-void draw(){
+public void draw(){
   //Background blanc
   background(255);
-<<<<<<< HEAD
-  mousePointer[0] = mouseX;
-  mousePointer[1] = mouseY;
-
-=======
   mousePointer = new PVector(mouseX, mouseY);
->>>>>>> master
   if(mainMenu){
     controlSelection();
     theMainMenu();
 
   }
   else if (!mainMenu && !gameEnd){
-  //printeigem el board
-  background (200);
-  fill (100);
-  rect(100 , 100,  fieldWidth , fieldHeight);
-  //fem print de la barra d'speed up i fem canviar el color segons que tant fuel ens queda
-  fill(colorSpeedUp,0,0);
-  rect(width/2 -250, height -75,speedUp,25);
-  if(!speeding && speedUp <= 500){ speedUp += 2.5; SPEED = 10;}
-  else if(speeding && speedUp > 0){ speedUp -= 5; SPEED= 15;}
-  if(speedUp <= 0){ speeding = false; }
-  if(!speeding && colorSpeedUp >0) { colorSpeedUp -=1 ;}
-  else if(speeding && colorSpeedUp < 250) { colorSpeedUp +=2.5 ;}
-  //Obtenim la possició del mouse
+  //Obtenim la possici\u00f3 del mouse
   //Set de la variable a false
   colisionObstacle = false;
   //Imprim tots els obstacles
@@ -203,7 +171,7 @@ void draw(){
     if(player.colision(exit.position,exit.getRadius()))
       gameEnd = true;
   }
-  //aparició dels enemics a l'escenari i el persegueixen
+  //aparici\u00f3 dels enemics a l'escenari i el persegueixen
   for( int k = 0; k<j; k++){
     enemies[k].pop();
     colisionObstacle = false;
@@ -221,26 +189,19 @@ void draw(){
       gameEnd = true;
       dead = true;
     }
-    //si apretem l'espai disparem
-    if(inputKeySpacebar){
-      bullet = new Bullet(playerPosition, enemies);
-    }
-    bullet.pop();
-    bullet.moveTowards(bullet.target.position);
-
   }
   }
   else if (!mainMenu && gameEnd && dead){
     fill(0);
     textSize(TEXTSIZEAA1);
-    text("YOU LOST", titleXY.x-TEXTSIZEAA1*2.5, titleXY.y);
+    text("YOU LOST", titleXY.x-TEXTSIZEAA1*2.5f, titleXY.y);
     if (startAgain)
       fill(200);
     else
       fill(0);
     ellipse(titleXY.x, titleXY.y+ TEXTSIZEAA1*2, RADIUS, RADIUS);
     textSize(TEXTSIZEEXIT);
-    text("START AGAIN", titleXY.x - TEXTSIZEEXIT*2.5, titleXY.y + TEXTSIZEAA1+TEXTSIZEAA1/2 );
+    text("START AGAIN", titleXY.x - TEXTSIZEEXIT*2.5f, titleXY.y + TEXTSIZEAA1+TEXTSIZEAA1/2 );
     if(mousePointer.x <= titleXY.x+100 && mousePointer.x >= titleXY.x-100){
       startAgain = true;
     }
@@ -257,7 +218,7 @@ void draw(){
   else if (!mainMenu && gameEnd && !dead){
     fill(0);
     textSize(TEXTSIZEAA1);
-    text("YOU WON", titleXY.x-TEXTSIZEAA1*2.5, titleXY.y);
+    text("YOU WON", titleXY.x-TEXTSIZEAA1*2.5f, titleXY.y);
     if(l < particles.length){
       if(frameCount % 5 == 0){
         particles[m] = new Particle();
@@ -282,7 +243,7 @@ void draw(){
       fill(0);
     ellipse(titleXY.x, titleXY.y+ TEXTSIZEAA1*2, RADIUS, RADIUS);
     textSize(TEXTSIZEEXIT);
-    text("START AGAIN", titleXY.x - TEXTSIZEEXIT*2.5, titleXY.y + TEXTSIZEAA1+TEXTSIZEAA1/2 );
+    text("START AGAIN", titleXY.x - TEXTSIZEEXIT*2.5f, titleXY.y + TEXTSIZEAA1+TEXTSIZEAA1/2 );
     if(mousePointer.x <= titleXY.x+100 && mousePointer.x >= titleXY.x-100){
       startAgain = true;
     }
@@ -298,7 +259,7 @@ void draw(){
   }
 }
 
-void generateObstacles(){
+public void generateObstacles(){
   int i = 0;
   int counter = 0;
   obstacles[i].randomizePosition();
@@ -306,10 +267,9 @@ void generateObstacles(){
   while( i < obstacles.length){
     counter = i;
     obstacles[i].randomizePosition();
-    while(counter != 0)
-    {
-      if(obstacles[i].colision(obstacles[counter-1].position, 150))
-      {
+    while(counter != 0){
+      // if(obstacles[i].getPosition(POSITIONX) <= (obstacles[counter-1].getPosition(POSITIONX))+RADIUS*2 && (obstacles[i].getPosition(POSITIONX) >= (obstacles[counter-1].getPosition(POSITIONX))-RADIUS*2) && obstacles[i].getPosition(POSITIONY) <= (obstacles[counter-1].getPosition(POSITIONY))+RADIUS*2 && (obstacles[i].getPosition(POSITIONY) >= (obstacles[counter-1].getPosition(POSITIONY))-RADIUS*2)){
+      if(obstacles[i].colision(obstacles[counter-1].position, 100)){
          obstacles[i].randomizePosition();
          counter = i;
       }
@@ -318,13 +278,12 @@ void generateObstacles(){
     i++;
   }
 }
-void printObstacles(){
+public void printObstacles(){
   for(int i = 0; i< obstacles.length; i++){
     obstacles[i].printObstacle();
   }
 }
-
-void theMainMenu(){
+public void theMainMenu(){
   fill(0);
   textSize(TEXTSIZEAA1);
   text("AA1", titleXY.x-TEXTSIZEAA1, titleXY.y);
@@ -337,7 +296,7 @@ void theMainMenu(){
   ellipse(titleXY.x/2+titleXY.x,titleXY.y-TEXTSIZEEXIT,RADIUS,RADIUS);
   text("MICE CONTROL",titleXY.x/2+titleXY.x-RADIUS/3-TEXTSIZEEXIT*2,titleXY.y-RADIUS);
 }
-void mousePressed(){
+public void mousePressed(){
   if (selectionKeyboardX && selectionKeyboardY){
     keyboard = true;
     mainMenu = false;
@@ -347,8 +306,6 @@ void mousePressed(){
     mainMenu = false;
   }
   if (startAgain){
-    colorSpeedUp = 0;
-    speedUp = 500;
     mainMenu = false;
     startAgain = false;
     gameEnd = false;
@@ -359,19 +316,11 @@ void mousePressed(){
     player.position.x = mouseX;
     player.position.y = mouseY;
     generateObstacles();
-    startAgain = false;
   }
-  //mentre mantenim pres el ratoli llavors aplicarem l'efecte d'speeding
-  if(speedUp > 0 && !mainMenu){ speeding = true; }
-  else { speeding = false; }
+  if(!player.mouseColision(mousePointer) && !mainMenu)
+    player.moveTowards(mousePointer, SPEED*10);
 }
-
-void mouseReleased(){
-  //al deixar de premer el ratoli deixem d'speedeigar
-  speeding = false;
-}
-
-void controlSelection(){
+public void controlSelection(){
  if (selectionKeyboardX && selectionKeyboardY){
    coloringKeyboard = 200;
  }
@@ -412,7 +361,7 @@ void controlSelection(){
     selectionMiceY = false;
   }
 }
-void keyPressed(){
+public void keyPressed(){
   if (key == 'w' || key == 'W' && !inputKeyUp)
     inputKeyUp = true;
   else if (key == 's' || key == 'S' && !inputKeyDown)
@@ -421,10 +370,8 @@ void keyPressed(){
     inputKeyLeft = true;
   else if (key == 'd' || key == 'D' && !inputKeyRight)
     inputKeyRight = true;
-  else if (key == ' '  && !inputKeySpacebar)
-    inputKeySpacebar = true;
 }
-void keyReleased(){
+public void keyReleased(){
   if (key == 'w' || key == 'W' && inputKeyUp)
     inputKeyUp =  false;
   else if (key == 's' || key == 'S' && inputKeyDown)
@@ -433,6 +380,212 @@ void keyReleased(){
     inputKeyLeft =  false;
   else if (key == 'd' || key == 'D' && inputKeyRight)
     inputKeyRight = false;
-  else if (key == ' '  && !inputKeySpacebar)
-    inputKeySpacebar = false;
+}
+class Enemy extends MovingObject{
+  Enemy(){
+    position = new PVector(ceil(random(0,width)), ceil(random(0,height)));
+    speed = ceil(random(SPEED/2,SPEED-2));
+  }
+
+  public void randomize(){
+    position = new PVector(ceil(random(0,width)), ceil(random(0,height)));
+  }
+
+  public void pop(){
+    fill(255,0,0);
+    strokeWeight(0);
+    ellipse(position.x, position.y, radius, radius);
+  }
+}
+class Exit {
+  final int RADIUS = 100;
+  boolean succesfullyDone;
+  PVector position;
+  float magnitudeVector;
+
+  Exit(){
+    position = new PVector(random(RADIUS, width-RADIUS), random(RADIUS, height-RADIUS));
+  }
+
+  public int getRadius(){
+      return RADIUS;
+  }
+
+  public boolean generateExit(Player player, Obstacle obstacles, int lengthObstacles){
+      //NO VAN ELS WHILES, TOT I SER FALSE ENTRA IGUAL
+      //CADA COP QUE CANVIA LA X O LA Y HEM DE SETEAR LA I A 0 UN ALTRE COP
+      if (colision(obstacles.position, obstacles.getRadius()) || colision(player.position, player.getRadius())){
+        position = new PVector(random(RADIUS, width-RADIUS), random(RADIUS, height-RADIUS));
+        return false;
+      }
+      return true;
+  }
+
+  public void printExit(){
+    //println(x1,y1,x1+(TRIANGLEAREA/2),y1,x1+(TRIANGLEAREA/4),y1-(TRIANGLEAREA/2));
+
+    //generem un triangle equilater
+    fill(233,200,0);
+    ellipse(position.x,position.y,100,100);
+    fill(0);
+    textSize(TEXTSIZEEXIT);
+    text(EXITMESSAGE,position.x-TEXTSIZEEXIT,position.y-50);
+  }
+
+  public boolean colision(PVector endPos, int endRadius){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
+      return magnitudeVector < (endRadius * 0.5f + RADIUS * 0.5f);
+  }
+}
+class MovingObject{
+  PVector position;
+  int radius = 20;
+  public float magnitudeVector;
+  int speed;
+
+  public int getRadius(){
+    return radius;
+  }
+
+  public void moveTowards(PVector endPos, int speed){
+    PVector vector = new PVector(0,0);
+    vector = new PVector(endPos.x - position.x, endPos.y - position.y);
+    position.x += (vector.x/sqrt(pow(vector.x,2)+pow(vector.y,2)))*speed;
+    position.y += (vector.y/sqrt(pow(vector.x,2)+pow(vector.y,2)))*speed;
+  }
+
+  public void movementWithKeyboard(boolean keyInputUp,boolean keyInputDown,boolean keyInputLeft,boolean keyInputRigth, int speed){
+    float vectorKX = 0.0f;
+    float vectorKY = 0.0f;
+    if(keyInputUp && keyInputLeft){
+        vectorKX = -0.5f;
+        vectorKY = -0.5f;
+        }
+    else if(keyInputUp && keyInputRigth){
+        vectorKX = 0.5f;
+        vectorKY = -0.5f;
+        }
+    else if(keyInputDown && keyInputLeft){
+        vectorKX = -0.5f;
+        vectorKY = 0.5f;
+        }
+    else if(keyInputDown && keyInputRigth){
+        vectorKX = 0.5f;
+        vectorKY = 0.5f;
+        }
+    else if(keyInputUp){
+        vectorKX = 0.0f;
+        vectorKY = -1.0f;
+      }
+    else if(keyInputLeft){
+        vectorKX = -1.0f;
+        vectorKY = 0.0f;
+      }
+    else if(keyInputDown){
+        vectorKX = 0.0f;
+        vectorKY = 1.0f;
+      }
+    else if(keyInputRigth){
+        vectorKX = 1.0f;
+        vectorKY = 0.0f;
+      }
+
+
+    position.x += vectorKX*speed;
+    position.y += vectorKY*speed;
+  }
+
+  public boolean colision(PVector endPos, int endRadius){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
+      return magnitudeVector < (endRadius * 0.5f + radius * 0.5f);
+  }
+
+  public void colisionMovement(PVector colisionPos, int radiusObstacle, int speed){
+    PVector v = new PVector(position.x - colisionPos.x, position.y - colisionPos.y);
+    v.setMag(radiusObstacle/2 + radius/2 + 1);
+    position.x = v.x + colisionPos.x;
+    position.y = v.y + colisionPos.y;
+  }
+}
+class Obstacle{
+  final int RADIUS = 100;
+  final int MIN = 1;
+  final int MAXX = ceil(width/RADIUS)-1;
+  final int MAXY = ceil(height/RADIUS)-1;
+  PVector position;
+  public float magnitudeVector;
+
+  Obstacle(){
+    position = new PVector(random(MIN,MAXX) * RADIUS, random(MIN,MAXY) * RADIUS);
+  }
+
+  public PVector getPosition(){
+    return position;
+  }
+
+  public int getRadius(){
+      return RADIUS;
+  }
+
+  public void randomizePosition(){
+    position.x = (random(MIN,MAXX))*RADIUS;
+    position.y = (random(MIN,MAXY))*RADIUS;
+  }
+
+  public void printObstacle(){
+    strokeWeight(0);
+    ellipse(position.x, position.y, RADIUS, RADIUS );
+  }
+
+  public boolean colision(PVector endPos, int endRadius){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
+      return magnitudeVector < (endRadius * 0.5f + RADIUS * 0.5f);
+  }
+}
+class Particle{
+  PVector velocity;
+  PVector acceleration;
+  PVector location;
+  float weight;
+  float deltaT;
+
+  Particle(){
+
+    //MASSA
+    weight = 1.0f;
+
+    acceleration = new PVector(0.0f, 100/weight);
+
+    location = new PVector(random(width), random(height));
+    //VECTOR VELOCITAT
+    velocity = new PVector(random(-40, 40), -random(100, 150));
+    //TEMPS
+    deltaT = 0.05f;
+  }
+}
+class Player extends MovingObject{
+  Player(){
+    position = new PVector(width/2, height/2);
+  }
+
+  public void pop(){
+    fill(0,255,0);
+    strokeWeight(0);
+    ellipse(position.x, position.y, radius, radius);
+  }
+
+  public boolean mouseColision(PVector endPos){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
+      return magnitudeVector < (radius/2);
+  }
+}
+  public void settings() {  fullScreen(); }
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "TiltToProcessing" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
+  }
 }

@@ -1,17 +1,16 @@
 class Player extends MovingObject{
   Player(){
-    position[POSITIONX] = width/2;
-    position[POSITIONY] = height/2;
+    position = new PVector(width/2, height/2);
   }
 
   public void pop(){
     fill(0,255,0);
     strokeWeight(0);
-    ellipse(position[POSITIONX], position[POSITIONY], radius, radius);
+    ellipse(position.x, position.y, radius, radius);
   }
 
-  public boolean mouseColision(float endPos[]){
-      magnitudeVector = sqrt(pow(endPos[POSITIONX] - position[POSITIONX],2) + pow(endPos[POSITIONY] - position[POSITIONY],2));
+  public boolean mouseColision(PVector endPos){
+      magnitudeVector = sqrt(pow(endPos.x - position.x,2) + pow(endPos.y - position.y,2));
       return magnitudeVector < (radius/2);
   }
 }
